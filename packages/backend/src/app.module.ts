@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import {Module} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {AppService} from './app.service';
+import {ConfigModule, ConfigService} from '@nestjs/config';
+import {RedisModule} from "@liaoliaots/nestjs-redis";
 
 @Module({
   imports: [
@@ -11,8 +12,20 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath:
         process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.local',
     }),
+    // Redis
+    RedisModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        config: {
+          host: configService.get('REDIS_HOST'),
+          port: parseInt(configService.get('REDIS_PORT'), 10),
+          password: configService.get('REDIS_PASSWORD'),
+        },
+      }),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+}
