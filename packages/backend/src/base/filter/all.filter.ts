@@ -5,8 +5,8 @@ import {
   HttpException,
   Logger,
   HttpStatus,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 // 捕获所有异常
 @Catch()
@@ -30,10 +30,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.message
-        : 'internet server error';
+        : "internet server error";
 
     // 异常日志
-    new Logger('HttpExceptionFilter').error(
+    new Logger("HttpExceptionFilter").error(
       request.url,
       exception.message,
       exception.stack,
