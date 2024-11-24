@@ -1,7 +1,7 @@
-import { Button } from "@arco-design/web-react";
+import RenderRouter from "./router";
 
 function App() {
-  return <Button>Hello World</Button>;
+  return <RenderRouter/>;
 }
 
 export default App;
