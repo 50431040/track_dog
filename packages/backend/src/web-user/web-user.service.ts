@@ -11,24 +11,24 @@ export class WebUserService {
     @InjectModel(WebUser.name) private webUserModel: Model<WebUser>,
   ) {}
 
-  // 查询是否存在初始用户
-  async checkInitialUserExists(): Promise<boolean> {
-    const initialUser = await this.webUserModel
+  // 获取管理员帐号
+  async getAdminAccount(): Promise<WebUser> {
+    const admin = await this.webUserModel
       .findOne({ isAdmin: true, isDelete: false })
       .select(["id"])
       .exec();
-    return !!initialUser;
+    return admin;
   }
 
-  // 创建初始用户
-  async createInitialUser(data: InitialUserDTO): Promise<boolean> {
-    const initialUser = new this.webUserModel({
+  // 创建管理员帐号
+  async createAdminAccount(data: InitialUserDTO): Promise<boolean> {
+    const adminAccount = new this.webUserModel({
       name: data.name,
       password: data.password,
       email: data.email,
       isAdmin: true,
     });
-    await initialUser.save();
+    await adminAccount.save();
     return true;
   }
 

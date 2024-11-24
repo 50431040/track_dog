@@ -19,7 +19,8 @@ export class WebUserController {
   @Public()
   @Get("/initial")
   async checkInitialUserExists(): Promise<boolean> {
-    return this.webUserService.checkInitialUserExists();
+    const adminAccount = await this.webUserService.getAdminAccount();
+    return Boolean(adminAccount);
   }
 
   // 创建初始用户
@@ -34,7 +35,7 @@ export class WebUserController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return this.webUserService.createInitialUser(body);
+    return this.webUserService.createAdminAccount(body);
   }
 
   // 登录
