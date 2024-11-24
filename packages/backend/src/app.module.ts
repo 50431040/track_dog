@@ -9,6 +9,7 @@ import { APP_FILTER } from "@nestjs/core";
 import { AllExceptionsFilter } from "./base/filter/all.filter";
 // import { TypeOrmModule } from '@nestjs/typeorm';
 import { WebUserModule } from "./web-user/web-user.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { WebUserModule } from "./web-user/web-user.module";
       }),
     }),
     WebUserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

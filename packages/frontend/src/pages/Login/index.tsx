@@ -13,19 +13,19 @@ function Login() {
   const [form] = Form.useForm();
   const setUserInfo = useUserStore((state) => state.setUserInfo);
 
-  useEffect(() => {
-    // 检查是否存在初始用户
-    const checkInitialUser = async () => {
-      try {
-        const response = await queryInitialUser();
-        if (!response) {
-          navigate("/register", { replace: true });
-        }
-      } catch (error) {
-        console.error("Error checking initial user:", error);
+  // 检查是否存在初始用户
+  const checkInitialUser = async () => {
+    try {
+      const response = await queryInitialUser();
+      if (!response) {
+        navigate("/register", { replace: true });
       }
-    };
+    } catch (error) {
+      console.error("Error checking initial user:", error);
+    }
+  };
 
+  useEffect(() => {
     checkInitialUser();
   }, []);
 
@@ -37,6 +37,7 @@ function Login() {
     login(params).then((data) => {
       console.log("res:", data);
       setUserInfo(data);
+      navigate("/", { replace: true });
     });
   };
 

@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import { ToJSONSchema } from "src/base/decorator/json.decorator";
 
-@Schema({
+@ToJSONSchema({
   collection: "web_user",
-  timestamps: { createdAt: "createTime", updatedAt: "updateTime" },
 })
 export class WebUser extends Document {
   // 用户名
@@ -34,8 +34,16 @@ export class WebUser extends Document {
   @Prop({ default: false })
   isDelete: boolean;
 
+  // 创建时间
+  @Prop({ default: Date.now, index: true })
+  createTime: Date;
+
+  // 更新时间
+  @Prop({ default: Date.now, index: true })
+  updateTime: Date;
+
   // 删除时间
-  @Prop()
+  @Prop({ index: true })
   deleteTime?: Date;
 }
 

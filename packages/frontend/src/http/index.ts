@@ -23,7 +23,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     if (response.status === 200 && response.data?.success) {
-      return response.data;
+      return response.data.data;
     } else {
       Message.error(response.data.message);
       return Promise.reject(response.data);

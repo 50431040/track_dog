@@ -21,7 +21,11 @@ const useUserStore = create(
     persist<State & Action>(
       (set) => ({
         userInfo: null,
-        setUserInfo: (userInfo) => set({ userInfo }),
+        setUserInfo: (userInfo) =>
+          set((state) => {
+            state.userInfo = userInfo;
+            return state;
+          }),
       }),
       {
         // store name

@@ -2,6 +2,7 @@ export interface IUserInfoDTO {
   id: string;
   name: string;
   avatar?: string;
+  isAdmin: boolean;
   email: string;
   token: string;
 }
