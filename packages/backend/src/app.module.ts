@@ -4,7 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { BullModule } from '@nestjs/bull';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
+// import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -37,19 +38,29 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
     }),
     // 数据库
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     type: 'mysql',
+    //     host: configService.get('DATABASE_HOST'),
+    //     port: configService.get('DATABASE_PORT'),
+    //     username: configService.get('DATABASE_USERNAME'),
+    //     password: configService.get('DATABASE_PASSWORD'),
+    //     database: configService.get('DATABASE_NAME'),
+    //     entities: ['./**/*.entity.js'],
+    //     synchronize: false,
+    //     logging: process.env.NODE_ENV !== 'production',
+    //   }),
+    // }),
+    // MongoDB
+    MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DATABASE_HOST'),
-        port: configService.get('DATABASE_PORT'),
-        username: configService.get('DATABASE_USERNAME'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
-        entities: ['./**/*.entity.js'],
-        synchronize: false,
-        logging: process.env.NODE_ENV !== 'production',
+        uri: `mongodb://${configService.get<string>('MONGODB_URL')}/`,
+        user: configService.get<string>('MONGODB_USER'),
+        pass: configService.get<string>('MONGODB_PASS'),
+        dbName: configService.get<string>('MONGODB_DB_NAME'),
       }),
     }),
   ],
