@@ -1,7 +1,7 @@
 import RenderRouter from "./router";
 
 function App() {
-  return <RenderRouter/>;
+  return <RenderRouter />;
 }
 
 export default App;

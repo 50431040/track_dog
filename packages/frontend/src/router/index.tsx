@@ -1,15 +1,15 @@
-import {lazy} from "react";
-import {useRoutes} from "react-router-dom";
+import { lazy } from "react";
+import { useRoutes } from "react-router-dom";
 
-const HomePage = lazy(() => import("../pages/Home"));
+const HomePage = lazy(() => import("../pages/Home/index.tsx"));
 
 const routeList = [
   // 首页
   {
     path: "/",
-    element: <HomePage/>,
+    element: <HomePage />,
     children: [],
-  }
+  },
 ];
 
 const RenderRouter = () => {
