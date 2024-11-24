@@ -1,24 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ResponseInterceptor } from './base/interceptor/response.interceptor';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { ResponseInterceptor } from "./base/interceptor/response.interceptor";
 import {
   BadRequestException,
   HttpStatus,
   ValidationPipe,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 async function bootstrap() {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === "production";
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
+  app.setGlobalPrefix("/api");
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       exceptionFactory: (errors) => {
         const msg = isProduction
-          ? 'Invalid params!'
+          ? "Invalid params!"
           : Object.values(errors[0].constraints)[0];
         return new BadRequestException({
           message: msg,

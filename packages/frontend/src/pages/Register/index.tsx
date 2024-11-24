@@ -1,8 +1,13 @@
 import { Form, Input, Button, Space } from "@arco-design/web-react";
 import { IconUser, IconLock, IconEmail } from "@arco-design/web-react/icon";
 import styles from "./index.module.scss";
+import { createInitialUser } from "../../api/user";
+import { IInitialUserParams } from "../../dto/User";
+import { useNavigate } from "react-router-dom";
+import md5 from "md5";
 
 function Register() {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
 
   const validateConfirmPassword = (
@@ -18,28 +23,37 @@ function Register() {
     }
   };
 
-  const handleSubmit = (values: any) => {
-    console.log("Form values:", values);
-    // TODO: 处理表单提交逻辑
+  const handleSubmit = (values: Record<string, string>) => {
+    const userParams: IInitialUserParams = {
+      name: values.name,
+      password: md5(values.password),
+      email: values.email,
+    };
+    createInitialUser(userParams).then((data) => {
+      if (data) {
+        // 跳转到登录页
+        navigate("/login", { replace: true });
+      }
+    });
   };
 
   const formRules = {
-    username: [
+    name: [
       { required: true, message: "请输入用户名" },
-      { maxLength: 16, message: "用户名不能超过16个字" },
+      { maxLength: 16, message: "最大长度为16" },
     ],
     password: [
       { required: true, message: "请输入初始密码" },
-      { maxLength: 32, message: "初始密码不能超过32个字符" },
+      { maxLength: 32, message: "最大长度为32" },
     ],
     confirmPassword: [
       { required: true, message: "请输入确认密码" },
-      { maxLength: 32, message: "确认初始密码不能超过32个字符" },
+      { maxLength: 32, message: "最大长度为32" },
       { validator: validateConfirmPassword },
     ],
     email: [
+      { required: true, message: "请输入邮箱" },
       { type: "email", message: "请输入有效的邮箱地址" },
-      { required: true, message: "邮箱是必填项" },
     ],
   };
 
@@ -64,7 +78,7 @@ function Register() {
           onSubmit={handleSubmit}
           form={form}
         >
-          <Form.Item label="用户名" field="username" rules={formRules.username}>
+          <Form.Item label="用户名" field="name" rules={formRules.name}>
             <Input
               prefix={<IconUser />}
               placeholder="请输入用户名"

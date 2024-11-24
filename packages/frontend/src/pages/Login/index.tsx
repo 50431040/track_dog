@@ -3,15 +3,23 @@ import { IconUser, IconLock } from "@arco-design/web-react/icon";
 import styles from "./index.module.scss";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { queryInitialUser } from "../../api/user";
+import { login, queryInitialUser } from "../../api/user";
+import md5 from "md5";
+import { ILoginParams } from "../../dto/User";
+import useUserStore from "../../store/useUserStore";
 
 function Login() {
+  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const setUserInfo = useUserStore((state) => state.setUserInfo);
+
   useEffect(() => {
+    // 检查是否存在初始用户
     const checkInitialUser = async () => {
       try {
         const response = await queryInitialUser();
-        if (!response?.id) {
-          navigate("/register");
+        if (!response) {
+          navigate("/register", { replace: true });
         }
       } catch (error) {
         console.error("Error checking initial user:", error);
@@ -21,7 +29,27 @@ function Login() {
     checkInitialUser();
   }, []);
 
-  const navigate = useNavigate();
+  const handleSubmit = (values: Record<string, string>) => {
+    const params: ILoginParams = {
+      name: values.name,
+      password: md5(values.password),
+    };
+    login(params).then((data) => {
+      console.log("res:", data);
+      setUserInfo(data);
+    });
+  };
+
+  const formRules = {
+    name: [
+      { required: true, message: "请输入用户名" },
+      { maxLength: 16, message: "最大长度为16" },
+    ],
+    password: [
+      { required: true, message: "请输入密码" },
+      { maxLength: 32, message: "最大长度为32" },
+    ],
+  };
 
   return (
     <div className={styles.container}>
@@ -38,8 +66,13 @@ function Login() {
         >
           TrackDog
         </h1>
-        <Form autoComplete="off" style={{ width: "100%" }}>
-          <Form.Item label="用户名" field="username">
+        <Form
+          autoComplete="off"
+          style={{ width: "100%" }}
+          onSubmit={handleSubmit}
+          form={form}
+        >
+          <Form.Item label="用户名" field="name" rules={formRules.name}>
             <Input
               prefix={<IconUser />}
               placeholder="请输入用户名"
@@ -47,7 +80,7 @@ function Login() {
               style={{ borderRadius: "4px" }}
             />
           </Form.Item>
-          <Form.Item label="密码" field="password">
+          <Form.Item label="密码" field="password" rules={formRules.password}>
             <Input.Password
               prefix={<IconLock />}
               placeholder="请输入密码"
