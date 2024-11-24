@@ -9,7 +9,8 @@ import {
 import { IconApps, IconHome, IconUser } from "@arco-design/web-react/icon";
 import styles from "./index.module.scss";
 import useUserStore from "../../store/useUserStore";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const MenuItem = Menu.Item;
 const Sider = Layout.Sider;
@@ -43,6 +44,14 @@ const menuList = [
 function Home() {
   const userInfo = useUserStore((state) => state.userInfo);
   const navigate = useNavigate();
+  const [defaultSelectedKeys] = useState<string[]>(() => {
+    const id = menuList.find((item) => location.href.includes(item.path))?.id;
+    if (location.hash === "#/") {
+      return [menuList[0].id];
+    } else {
+      return id ? [id] : [menuList[0].id];
+    }
+  });
 
   const onLogout = () => {
     // TODO
@@ -62,7 +71,7 @@ function Home() {
         {/* logo */}
         <div className="logo" />
         <Menu
-          defaultSelectedKeys={[menuList[0].id]}
+          defaultSelectedKeys={defaultSelectedKeys}
           onClickMenuItem={onMenuClick}
           style={{ width: "100%" }}
         >
