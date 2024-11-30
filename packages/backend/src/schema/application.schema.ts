@@ -10,7 +10,7 @@ export class ApplicationRepository extends BaseEntity {
   name: string;
 
   // 图标
-  @Column({ length: 1000 })
+  @Column({ default: "", length: 1000 })
   icon: string;
 
   // 平台

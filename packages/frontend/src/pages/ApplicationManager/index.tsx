@@ -17,7 +17,8 @@ import { useEffect, useState } from "react";
 import { createApplication, queryApplicationList } from "../../api/application";
 import { IApplication } from "../../dto/Application";
 import dayjs from "dayjs";
-// import {} from "@track_dog/common";
+import { Platform } from "@/enum/platform";
+console.log(Platform);
 
 const columns: TableColumnProps[] = [
   {
@@ -33,7 +34,7 @@ const columns: TableColumnProps[] = [
   {
     title: "平台",
     dataIndex: "platform",
-    render: (value) => <Tag>{value}</Tag>,
+    render: (value) => <Tag>{Platform[value as keyof typeof Platform]}</Tag>,
   },
   {
     title: "创建时间",
@@ -89,7 +90,6 @@ function ApplicationManager() {
 
   const onConfirmAddApplication = () => {
     form.validate().then((values) => {
-      console.log(values);
       createApplication(values).then(() => {
         form.resetFields();
         setAddModalVisible(false);
@@ -136,8 +136,11 @@ function ApplicationManager() {
           </Form.Item>
           <Form.Item label="平台" field="platform" rules={formRules.platform}>
             <Select>
-              <Select.Option value="flutter">Flutter</Select.Option>
-              <Select.Option value="android">Android</Select.Option>
+              {Object.keys(Platform).map((platform) => (
+                <Select.Option key={platform} value={platform}>
+                  {Platform[platform as keyof typeof Platform]}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
         </Form>
