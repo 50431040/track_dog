@@ -2,7 +2,7 @@ import { Entity, Column, Index } from "typeorm";
 import { BaseEntity } from "@/base/entity/base.entity";
 
 @Entity({ name: "application" })
-@Index(["name", "platform"], { unique: true })
+@Index(["name", "platform", "creator"], { unique: true })
 export class ApplicationRepository extends BaseEntity {
   // 应用名称
   @Column({ length: 32 })
