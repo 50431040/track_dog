@@ -1,15 +1,12 @@
 import { Module } from "@nestjs/common";
 import { WebUserController } from "./web-user.controller";
 import { WebUserService } from "./web-user.service";
-import { WebUser, WebUserSchema } from "src/schema/web-user";
-import { MongooseModule } from "@nestjs/mongoose";
-import { AuthModule } from "src/auth/auth.module";
+import { WebUserRepository } from "@/schema/web-user.schema";
+import { AuthModule } from "@/auth/auth.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: WebUser.name, schema: WebUserSchema }]),
-    AuthModule,
-  ],
+  imports: [TypeOrmModule.forFeature([WebUserRepository]), AuthModule],
   controllers: [WebUserController],
   providers: [WebUserService],
 })

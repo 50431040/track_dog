@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { WebUser } from "../schema/web-user";
+import { WebUserRepository } from "@/schema/web-user.schema";
 import { RedisService } from "@liaoliaots/nestjs-redis";
 
 @Injectable()
@@ -10,9 +10,9 @@ export class AuthService {
     private readonly redisService: RedisService,
   ) {}
 
-  async login(userInfo: WebUser) {
+  async login(userInfo: WebUserRepository) {
     const payload = {
-      id: userInfo.id,
+      id: userInfo._id.toString(),
       name: userInfo.name,
       isAdmin: userInfo.isAdmin,
     };

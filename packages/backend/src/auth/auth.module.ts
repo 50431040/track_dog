@@ -2,12 +2,12 @@ import { Module } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "../constants/jwt";
-import { WebUser, WebUserSchema } from "../schema/web-user";
+import { WebUserRepository } from "../schema/web-user.schema";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth.guard";
 import { JwtStrategy } from "./jwt.strategy";
 import { PassportModule } from "@nestjs/passport";
-import { MongooseModule } from "@nestjs/mongoose";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { MongooseModule } from "@nestjs/mongoose";
       secret: jwtConstants.secret,
       signOptions: { expiresIn: "30d" },
     }),
-    MongooseModule.forFeature([{ name: WebUser.name, schema: WebUserSchema }]),
+    TypeOrmModule.forFeature([WebUserRepository]),
   ],
   providers: [
     AuthService,

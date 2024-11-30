@@ -5,8 +5,8 @@ import { WebUserService } from "./web-user.service";
 import { Body } from "@nestjs/common/decorators";
 import { InitialUserDTO } from "./dto/initial.dto";
 import { LoginDTO } from "./dto/login.dto";
-import { Public } from "src/auth/public.decorator";
-import { AuthService } from "src/auth/auth.service";
+import { Public } from "@/auth/public.decorator";
+import { AuthService } from "@/auth/auth.service";
 
 @Controller("web/user")
 export class WebUserController {
@@ -49,7 +49,7 @@ export class WebUserController {
 
     const token = await this.authService.login(user);
     return {
-      ...user.toJSON(),
+      ...user,
       token,
     };
   }
