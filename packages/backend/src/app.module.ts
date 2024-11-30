@@ -54,7 +54,7 @@ import { ApplicationRepository } from "./schema/application.schema";
         database: "track_dog",
         authSource: "admin",
         entities: [WebUserRepository, ApplicationRepository],
-        synchronize: false,
+        synchronize: true,
         logging: process.env.NODE_ENV !== "production",
       }),
     }),

@@ -40,8 +40,8 @@ export class ApplicationService {
       platform: application.platform,
       creator,
     });
-    await this.applicationModel.save(newApplication).catch((error) => {
-      throw new BadRequestException(error);
+    await this.applicationModel.save(newApplication).catch(() => {
+      throw new BadRequestException("应用名称已存在");
     });
     return {
       _id: newApplication._id.toString(),
