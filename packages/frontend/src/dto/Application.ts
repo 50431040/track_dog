@@ -1,3 +1,5 @@
+import { Platform } from "@track_dog/common";
+
 export interface IQueryApplicationListParams {
   keyword?: string;
   page?: number;
@@ -15,4 +17,10 @@ export interface IApplication {
 export interface IApplicationListDTO {
   list: IApplication[];
   total: number;
+}
+
+export interface ICreateApplicationParams {
+  name: string;
+  icon: string;
+  platform: Platform;
 }

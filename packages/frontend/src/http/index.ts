@@ -25,6 +25,9 @@ instance.interceptors.response.use(
     if (response.status === 200 && response.data?.success) {
       return response.data.data;
     } else {
+      if (response.data.code === 401) {
+        useUserStore.getState().logout();
+      }
       Message.error(response.data.message);
       return Promise.reject(response.data);
     }

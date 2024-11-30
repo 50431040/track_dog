@@ -26,6 +26,9 @@ export class ApplicationService {
       select: ["_id", "name", "icon", "platform", "createTime"],
       skip: (params.page - 1) * params.pageSize,
       take: params.pageSize,
+      order: {
+        createTime: "DESC",
+      },
     });
   }
 

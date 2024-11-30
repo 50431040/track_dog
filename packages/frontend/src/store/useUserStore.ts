@@ -11,6 +11,7 @@ type State = {
 // action类型定义
 type Action = {
   setUserInfo: (userInfo: IUserInfoDTO) => void;
+  logout: () => void;
 };
 
 /** 用户信息相关【示例，正式使用请删除】 */
@@ -22,9 +23,16 @@ const useUserStore = create(
       (set) => ({
         userInfo: null,
         setUserInfo: (userInfo) =>
-          set((state) => {
-            state.userInfo = userInfo;
-            return state;
+          set(() => {
+            return {
+              userInfo,
+            };
+          }),
+        logout: () =>
+          set(() => {
+            return {
+              userInfo: null,
+            };
           }),
       }),
       {

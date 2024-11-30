@@ -2,10 +2,22 @@ import {
   PaginationProps,
   Table,
   TableColumnProps,
+  Image,
+  Tag,
+  Grid,
+  Button,
+  Divider,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Message,
 } from "@arco-design/web-react";
-import { SorterInfo } from "@arco-design/web-react/es/Table/interface";
 import { useEffect, useState } from "react";
-import { queryApplicationList } from "../../api/application";
+import { createApplication, queryApplicationList } from "../../api/application";
+import { IApplication } from "../../dto/Application";
+import dayjs from "dayjs";
+// import {} from "@track_dog/common";
 
 const columns: TableColumnProps[] = [
   {
@@ -15,52 +27,122 @@ const columns: TableColumnProps[] = [
   {
     title: "图标",
     dataIndex: "icon",
+    render: (value) =>
+      value ? <Image src={value} alt="icon" width={20} height={20} /> : "-",
   },
   {
     title: "平台",
     dataIndex: "platform",
+    render: (value) => <Tag>{value}</Tag>,
   },
   {
     title: "创建时间",
     dataIndex: "createTime",
+    render: (value) =>
+      value ? <div>{dayjs(value).format("YYYY-MM-DD HH:mm:ss")}</div> : "",
   },
 ];
 
+const formRules = {
+  name: [
+    { required: true, message: "请输入应用名称" },
+    { maxLength: 32, message: "最大长度为32" },
+  ],
+  icon: [{ maxLength: 1000, message: "最大长度为1000" }],
+  platform: [{ required: true, message: "请选择应用平台" }],
+};
+
 function ApplicationManager() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<IApplication[]>([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
     total: 0,
   });
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [form] = Form.useForm();
 
-  const onChange = (
-    pagination: PaginationProps,
-    sorter: SorterInfo | SorterInfo[],
-  ) => {
-    console.log(pagination, sorter);
+  const onChange = (pagination: PaginationProps) => {
+    setPagination(pagination);
   };
 
   const search = async () => {
+    setLoading(false);
     const res = await queryApplicationList({
       page: pagination.current,
       pageSize: pagination.pageSize,
+    }).finally(() => {
+      setLoading(false);
+    });
+
+    setData(res.list);
+    setPagination({
+      ...pagination,
+      total: res.total,
+    });
+  };
+
+  const onAddApplication = () => {
+    setAddModalVisible(true);
+  };
+
+  const onConfirmAddApplication = () => {
+    form.validate().then((values) => {
+      console.log(values);
+      createApplication(values).then(() => {
+        form.resetFields();
+        setAddModalVisible(false);
+        search();
+        Message.success("添加成功");
+      });
     });
   };
 
   useEffect(() => {
     search();
-  }, []);
+  }, [pagination.current, pagination.pageSize]);
 
   return (
-    <Table
-      columns={columns}
-      loading={loading}
-      pagination={pagination}
-      data={data}
-      onChange={onChange}
-    />
+    <>
+      <Grid.Row justify="end">
+        <Button type="primary" onClick={onAddApplication}>
+          添加
+        </Button>
+      </Grid.Row>
+      <Divider />
+      <Table
+        columns={columns}
+        showHeader
+        rowKey="_id"
+        loading={loading}
+        pagination={pagination}
+        data={data}
+        onChange={onChange}
+      />
+      <Modal
+        title="添加应用"
+        maskClosable={false}
+        visible={addModalVisible}
+        onOk={onConfirmAddApplication}
+        onCancel={() => setAddModalVisible(false)}
+      >
+        <Form form={form}>
+          <Form.Item label="应用名称" field="name" rules={formRules.name}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="应用图标" field="icon" rules={formRules.icon}>
+            <Input />
+          </Form.Item>
+          <Form.Item label="平台" field="platform" rules={formRules.platform}>
+            <Select>
+              <Select.Option value="flutter">Flutter</Select.Option>
+              <Select.Option value="android">Android</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
 

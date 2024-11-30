@@ -127,6 +127,7 @@ importers:
       '@types/react-dom': ^18.3.1
       '@vitejs/plugin-react-swc': ^3.5.0
       axios: ^1.7.7
+      dayjs: ^1.11.13
       eslint: ^9.13.0
       eslint-plugin-react-hooks: ^5.0.0
       eslint-plugin-react-refresh: ^0.4.14
@@ -146,6 +147,7 @@ importers:
       '@arco-design/web-react': 2.64.1_vsw25juzkyj7spaf6wjn5upvjq
       '@track_dog/common': link:../common
       axios: 1.7.7
+      dayjs: 1.11.13
       immer: 10.1.1
       md5: 2.3.0
       react: 18.3.1
