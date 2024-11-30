@@ -19,7 +19,7 @@ export class WebUserService {
         isAdmin: true,
         isDelete: false,
       },
-      select: ["id"],
+      select: ["_id"],
     });
     return admin;
   }
@@ -40,7 +40,7 @@ export class WebUserService {
   async login(data: LoginDTO): Promise<WebUserRepository> {
     const user = await this.webUserRepository.findOne({
       where: { name: data.name, password: data.password, isDelete: false },
-      select: ["id", "name", "email", "isAdmin"],
+      select: ["_id", "name", "email", "isAdmin"],
     });
     return user;
   }

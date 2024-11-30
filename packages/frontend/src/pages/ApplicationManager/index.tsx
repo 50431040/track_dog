@@ -4,7 +4,8 @@ import {
   TableColumnProps,
 } from "@arco-design/web-react";
 import { SorterInfo } from "@arco-design/web-react/es/Table/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { queryApplicationList } from "../../api/application";
 
 const columns: TableColumnProps[] = [
   {
@@ -40,6 +41,17 @@ function ApplicationManager() {
   ) => {
     console.log(pagination, sorter);
   };
+
+  const search = async () => {
+    const res = await queryApplicationList({
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+  };
+
+  useEffect(() => {
+    search();
+  }, []);
 
   return (
     <Table

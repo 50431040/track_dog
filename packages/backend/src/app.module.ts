@@ -11,6 +11,8 @@ import { AuthModule } from "./auth/auth.module";
 import { ApplicationModule } from "./application/application.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { WebUserRepository } from "./schema/web-user.schema";
+import { WebApplicationModule } from "./web-application/web-application.module";
+import { ApplicationRepository } from "./schema/application.schema";
 
 @Module({
   imports: [
@@ -51,7 +53,7 @@ import { WebUserRepository } from "./schema/web-user.schema";
         url: `mongodb://${configService.get<string>("MONGODB_USER")}:${configService.get<string>("MONGODB_PASS")}@${configService.get<string>("MONGODB_HOST")}:${configService.get<string>("MONGODB_PORT")}/`,
         database: "track_dog",
         authSource: "admin",
-        entities: [WebUserRepository],
+        entities: [WebUserRepository, ApplicationRepository],
         synchronize: false,
         logging: process.env.NODE_ENV !== "production",
       }),
@@ -69,6 +71,7 @@ import { WebUserRepository } from "./schema/web-user.schema";
     WebUserModule,
     AuthModule,
     ApplicationModule,
+    WebApplicationModule,
   ],
   controllers: [AppController],
   providers: [

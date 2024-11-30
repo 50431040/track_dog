@@ -3,7 +3,7 @@ import { ApplicationService } from "./application.service";
 import { Platform } from "@track_dog/common";
 import { ApplicationRepository } from "@/schema/application.schema";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { InsertResult, Repository, UpdateResult } from "typeorm";
+import { Repository, UpdateResult } from "typeorm";
 import { ObjectId } from "mongodb";
 
 describe("ApplicationService", () => {
@@ -18,8 +18,9 @@ describe("ApplicationService", () => {
           provide: getRepositoryToken(ApplicationRepository),
           useValue: {
             create: jest.fn(),
-            insert: jest.fn(),
+            save: jest.fn(),
             update: jest.fn(),
+            findAndCount: jest.fn(),
           },
         },
       ],
@@ -44,16 +45,11 @@ describe("ApplicationService", () => {
         ...data,
       } as ApplicationRepository;
     });
-    jest.spyOn(applicationModel, "insert").mockImplementation((data) => {
-      return Promise.resolve({
-        identifiers: [data],
-        generatedMaps: [],
-        raw: [],
-      } as InsertResult);
+    jest.spyOn(applicationModel, "save").mockImplementation((data) => {
+      return Promise.resolve(data as ApplicationRepository);
     });
 
-    const creator = new ObjectId();
-    const result = await service.createApplication(application, creator);
+    const result = await service.createApplication(application, "123");
     expect(result).toBeDefined();
     expect(result.name).toEqual(application.name);
     expect(result.platform).toEqual(application.platform);
@@ -66,7 +62,7 @@ describe("ApplicationService", () => {
 
   it("should update an application", async () => {
     const application = {
-      id: new ObjectId().toString(),
+      _id: new ObjectId().toString(),
       name: "Test Application",
       icon: "https://example.com/icon.png",
       platform: Platform.Flutter,
@@ -82,7 +78,7 @@ describe("ApplicationService", () => {
 
   it("should return false when updating an application fails", async () => {
     const application = {
-      id: new ObjectId().toString(),
+      _id: new ObjectId().toString(),
       name: "Test Application",
       icon: "https://example.com/icon.png",
       platform: Platform.Flutter,
@@ -94,5 +90,25 @@ describe("ApplicationService", () => {
     });
     const result = await service.updateApplication(application);
     expect(result).toBe(false);
+  });
+
+  it("should return application list", async () => {
+    const data = [
+      {
+        _id: "123",
+        name: "Test Application",
+      },
+    ] as unknown as ApplicationRepository[];
+    jest.spyOn(applicationModel, "findAndCount").mockImplementation(() => {
+      return Promise.resolve([data, data.length]);
+    });
+    const result = await service.queryApplicationList("123", {
+      keyword: "test",
+      page: 1,
+      pageSize: 10,
+    });
+    expect(result).toBeDefined();
+    expect(result[0]).toEqual(data);
+    expect(result[1]).toBe(data.length);
   });
 });

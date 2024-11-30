@@ -1,5 +1,5 @@
 import { BaseEntity } from "@/base/entity/base.entity";
-import { Column, Entity, Index, ObjectId, ObjectIdColumn } from "typeorm";
+import { Column, Entity, Index } from "typeorm";
 
 @Entity({ name: "web_user" })
 export class WebUserRepository extends BaseEntity {
@@ -25,8 +25,8 @@ export class WebUserRepository extends BaseEntity {
   email: string;
 
   // 创建者
-  @ObjectIdColumn()
-  creator?: ObjectId;
+  @Column({ nullable: true })
+  creator?: string;
 
   // 是否删除
   @Column({ default: false })

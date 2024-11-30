@@ -1,10 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { CreateApplicationDto } from "./dto/create.dto";
 import { UpdateApplicationDto } from "./dto/update.dto";
 import { ApplicationRepository } from "@/schema/application.schema";
 import { ObjectId } from "mongodb";
+import { GetApplicationListDto } from "./dto/get-list.dto";
 
 @Injectable()
 export class ApplicationService {
@@ -13,20 +14,34 @@ export class ApplicationService {
     private applicationModel: Repository<ApplicationRepository>,
   ) {}
 
+  // 获取应用
+  async queryApplicationList(creator: string, params: GetApplicationListDto) {
+    return this.applicationModel.findAndCount({
+      where: {
+        creator,
+        ...(params.keyword && params.keyword.length > 0
+          ? { name: Like(`%${params.keyword}%`) }
+          : {}),
+      },
+      select: ["_id", "name", "icon", "platform", "createTime"],
+      skip: (params.page - 1) * params.pageSize,
+      take: params.pageSize,
+    });
+  }
+
   // 创建应用
-  async createApplication(
-    application: CreateApplicationDto,
-    creator: ObjectId,
-  ) {
+  async createApplication(application: CreateApplicationDto, creator: string) {
     const newApplication = this.applicationModel.create({
       name: application.name,
       icon: application.icon,
       platform: application.platform,
       creator,
     });
-    await this.applicationModel.insert(newApplication);
+    await this.applicationModel.save(newApplication).catch((error) => {
+      throw new BadRequestException(error);
+    });
     return {
-      id: newApplication._id.toString(),
+      _id: newApplication._id.toString(),
       name: newApplication.name,
       icon: newApplication.icon,
       platform: newApplication.platform,
@@ -36,7 +51,7 @@ export class ApplicationService {
   // 更新应用
   async updateApplication(application: UpdateApplicationDto) {
     const updateResult = await this.applicationModel.update(
-      { _id: application.id as any },
+      { _id: ObjectId.createFromHexString(application._id) },
       {
         name: application.name,
         icon: application.icon,

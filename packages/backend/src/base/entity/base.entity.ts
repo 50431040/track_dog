@@ -30,8 +30,4 @@ export class BaseEntity {
   onUpdate() {
     this.updateTime = Date.now();
   }
-
-  get id(): string {
-    return this._id.toString();
-  }
 }

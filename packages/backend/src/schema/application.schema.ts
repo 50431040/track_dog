@@ -1,4 +1,4 @@
-import { Entity, Column, Index, ObjectIdColumn, ObjectId } from "typeorm";
+import { Entity, Column, Index } from "typeorm";
 import { BaseEntity } from "@/base/entity/base.entity";
 
 @Entity({ name: "application" })
@@ -18,6 +18,6 @@ export class ApplicationRepository extends BaseEntity {
   platform: string;
 
   // 创建人
-  @ObjectIdColumn()
-  creator: ObjectId;
+  @Column()
+  creator: string;
 }

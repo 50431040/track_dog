@@ -5,5 +5,5 @@ export class UpdateApplicationDto extends CreateApplicationDto {
   @IsString()
   @IsNotEmpty()
   @IsMongoId()
-  id: string;
+  _id: string;
 }
