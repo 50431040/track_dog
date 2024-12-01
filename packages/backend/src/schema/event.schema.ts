@@ -1,10 +1,10 @@
 import { Entity, Column, Index } from "typeorm";
 import { BaseEntity } from "@/base/entity/base.entity";
 
-// 事件表
-@Entity({ name: "click_event" })
+// 普通事件表（点击、自定义事件）
+@Entity({ name: "normal_event" })
 @Index(["appId", "type", "name"], { unique: true })
-export class ClickEventRepository extends BaseEntity {
+export class NormalEventRepository extends BaseEntity {
   // 应用ID
   @Column({ length: 32 })
   @Index()

@@ -1,4 +1,4 @@
-import { IClickEvent } from "@/enum/event";
+import { INormalEvent } from "@/enum/event";
 import { EventRecordRepository } from "@/schema/event-record.schema";
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -13,7 +13,7 @@ export class EventRecordService {
 
   logger = new Logger(EventRecordService.name);
 
-  async saveEventRecord(eventId: string, data: IClickEvent) {
+  async saveEventRecord(eventId: string, data: INormalEvent) {
     try {
       const {
         deviceId,

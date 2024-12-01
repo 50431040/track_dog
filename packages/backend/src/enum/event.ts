@@ -9,15 +9,15 @@ export enum EventType {
   Custom = "custom_event",
 }
 
-// 点击事件类型
-export enum EventClickType {
+// 事件上报类型
+export enum EventUploadType {
   // 手动上报
-  ClickManual = "manual",
+  UploadManual = "manual",
   // 自动上报
-  ClickAuto = "auto",
+  UploadAuto = "auto",
 }
 
-export interface IClickEvent {
+export interface INormalEvent {
   appId: string;
   deviceId: string;
   userId?: string;
@@ -25,7 +25,7 @@ export interface IClickEvent {
   triggerId: string;
   sdkVersion?: string;
   version?: string;
-  type: EventClickType;
+  type: EventUploadType;
   name: string;
   triggerTime: number;
   params?: Record<string, any> | null;

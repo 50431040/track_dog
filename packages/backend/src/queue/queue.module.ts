@@ -3,17 +3,17 @@ import { QueueService } from "./queue.service";
 import { EventEntryConsumer } from "./consumer/event-entry.consumer";
 import { BullModule } from "@nestjs/bull";
 import {
-  CLICK_EVENT_QUEUE,
+  NORMAL_EVENT_QUEUE,
   EVENT_CLEAN_QUEUE,
   EVENT_ENTRY_QUEUE,
 } from "./queue.constants";
 import { ApplicationModule } from "@/application/application.module";
 import { EventModule } from "@/event/event.module";
 import { EventCleanConsumer } from "./consumer/event-clean.consumer";
-import { EventClickConsumer } from "./consumer/click-event.consumer";
+import { NormalEventConsumer } from "./consumer/normal-event.consumer";
 import { EventRecordModule } from "@/event-record/event-record.module";
 import { EventCustomModule } from "@/event-custom/event-custom.module";
-import { ClickEventModule } from "@/click-event/click-event.module";
+import { NormalEventModule } from "@/normal-event/normal-event.module";
 
 @Module({
   imports: [
@@ -24,19 +24,19 @@ import { ClickEventModule } from "@/click-event/click-event.module";
       name: EVENT_CLEAN_QUEUE,
     }),
     BullModule.registerQueue({
-      name: CLICK_EVENT_QUEUE,
+      name: NORMAL_EVENT_QUEUE,
     }),
     ApplicationModule,
     EventModule,
     EventRecordModule,
     EventCustomModule,
-    ClickEventModule,
+    NormalEventModule,
   ],
   providers: [
     QueueService,
     EventEntryConsumer,
     EventCleanConsumer,
-    EventClickConsumer,
+    NormalEventConsumer,
   ],
   exports: [QueueService],
 })

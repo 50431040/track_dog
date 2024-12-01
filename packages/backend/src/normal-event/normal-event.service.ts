@@ -1,19 +1,19 @@
-import { IClickEvent } from "@/enum/event";
-import { ClickEventRepository } from "@/schema/event.schema";
+import { INormalEvent } from "@/enum/event";
+import { NormalEventRepository } from "@/schema/event.schema";
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class ClickEventService {
+export class NormalEventService {
   constructor(
-    @InjectRepository(ClickEventRepository)
-    private readonly eventRepository: Repository<ClickEventRepository>,
+    @InjectRepository(NormalEventRepository)
+    private readonly eventRepository: Repository<NormalEventRepository>,
   ) {}
 
-  logger = new Logger(ClickEventService.name);
-  // 保存点击事件
-  async saveClickEvent(data: IClickEvent) {
+  logger = new Logger(NormalEventService.name);
+  // 保存普通事件
+  async saveNormalEvent(data: INormalEvent) {
     const { appId, type, name } = data;
     try {
       const event = this.eventRepository.create({

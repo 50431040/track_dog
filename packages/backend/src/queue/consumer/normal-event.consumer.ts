@@ -1,33 +1,33 @@
-import { IClickEvent } from "@/enum/event";
+import { INormalEvent } from "@/enum/event";
 import { Processor, Process } from "@nestjs/bull";
 import { Job } from "bull";
-import { CLICK_EVENT_PROCESS, CLICK_EVENT_QUEUE } from "../queue.constants";
+import { NORMAL_EVENT_PROCESS, NORMAL_EVENT_QUEUE } from "../queue.constants";
 import { EventService } from "@/event/event.service";
 import { Logger } from "@nestjs/common";
 import { EventRecordService } from "@/event-record/event-record.service";
 import { EventCustomService } from "@/event-custom/event-custom.service";
-import { ClickEventService } from "@/click-event/click-event.service";
+import { NormalEventService } from "@/normal-event/normal-event.service";
 
-@Processor(CLICK_EVENT_QUEUE)
-export class EventClickConsumer {
+@Processor(NORMAL_EVENT_QUEUE)
+export class NormalEventConsumer {
   constructor(
     private readonly eventService: EventService,
     private readonly eventRecordService: EventRecordService,
     private readonly eventCustomService: EventCustomService,
-    private readonly clickEventService: ClickEventService,
+    private readonly normalEventService: NormalEventService,
   ) {}
 
-  logger = new Logger(EventClickConsumer.name);
+  logger = new Logger(NormalEventConsumer.name);
 
   @Process({
-    name: CLICK_EVENT_PROCESS,
+    name: NORMAL_EVENT_PROCESS,
     concurrency: 1,
   })
-  async handleClickEvent(job: Job<IClickEvent>) {
+  async handleNormalEvent(job: Job<INormalEvent>) {
     const data = job.data;
 
     // 保存事件名
-    const event = await this.clickEventService.saveClickEvent(data);
+    const event = await this.normalEventService.saveNormalEvent(data);
     if (!event) {
       this.logger.error("保存点击事件失败", data);
       return;

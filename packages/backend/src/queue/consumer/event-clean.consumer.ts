@@ -4,7 +4,7 @@ import { Job } from "bull";
 import { EventEntryParams } from "@/types/event";
 import { EventService } from "@/event/event.service";
 import { QueueService } from "../queue.service";
-import { EventClickType, EventType, IClickEvent } from "@/enum/event";
+import { EventUploadType, EventType, INormalEvent } from "@/enum/event";
 
 @Processor(EVENT_CLEAN_QUEUE)
 export class EventCleanConsumer {
@@ -24,9 +24,9 @@ export class EventCleanConsumer {
     // 分类处理事件（分大类）
     for (const event of eventList) {
       switch (event.type) {
-        case EventClickType.ClickManual:
-        case EventClickType.ClickAuto:
-          this.queueService.clickEventProducer(event as IClickEvent);
+        case EventUploadType.UploadManual:
+        case EventUploadType.UploadAuto:
+          this.queueService.normalEventProducer(event as INormalEvent);
           break;
         default:
           break;

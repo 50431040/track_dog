@@ -2,15 +2,15 @@ import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
 import {
-  CLICK_EVENT_PROCESS,
-  CLICK_EVENT_QUEUE,
+  NORMAL_EVENT_PROCESS,
+  NORMAL_EVENT_QUEUE,
   EVENT_CLEAN_PROCESS,
   EVENT_CLEAN_QUEUE,
   EVENT_ENTRY_PROCESS,
   EVENT_ENTRY_QUEUE,
 } from "./queue.constants";
 import { EventEntryParams } from "@/types/event";
-import { IClickEvent } from "@/enum/event";
+import { INormalEvent } from "@/enum/event";
 
 @Injectable()
 export class QueueService {
@@ -19,8 +19,8 @@ export class QueueService {
     private readonly eventEntryQueue: Queue,
     @InjectQueue(EVENT_CLEAN_QUEUE)
     private readonly eventCleanQueue: Queue,
-    @InjectQueue(CLICK_EVENT_QUEUE)
-    private readonly clickEventQueue: Queue,
+    @InjectQueue(NORMAL_EVENT_QUEUE)
+    private readonly normalEventQueue: Queue,
   ) {}
 
   // 事件入口生产者
@@ -40,8 +40,8 @@ export class QueueService {
   }
 
   // 点击事件生产者
-  clickEventProducer(params: IClickEvent) {
-    return this.clickEventQueue.add(CLICK_EVENT_PROCESS, params, {
+  normalEventProducer(params: INormalEvent) {
+    return this.normalEventQueue.add(NORMAL_EVENT_PROCESS, params, {
       removeOnComplete: true,
       removeOnFail: true,
     });

@@ -1,4 +1,4 @@
-import { EventClickType, EventType } from "@/enum/event";
+import { EventUploadType, EventType } from "@/enum/event";
 import { EventEntryParams } from "@/types/event";
 import { Injectable, Logger } from "@nestjs/common";
 import { Platform } from "@track_dog/common";
@@ -33,7 +33,7 @@ export class EventService {
     }
 
     const eventList = [];
-    const clickCommonData = {
+    const normalEventCommonData = {
       appId: data.appId,
       deviceId: data.device_id,
       userId: data.user_id || "",
@@ -52,10 +52,10 @@ export class EventService {
 
       // 客户端上报的type
       if (type === EventType.Click || type === EventType.Custom) {
-        const result = this.cleanFlutterClickEvent(item);
+        const result = this.cleanFlutterNormalEvent(item);
         if (result) {
           eventList.push({
-            ...clickCommonData,
+            ...normalEventCommonData,
             ...result,
           });
         }
@@ -73,8 +73,8 @@ export class EventService {
     return eventList;
   }
 
-  // 清洗点击事件
-  cleanFlutterClickEvent(data: any) {
+  // 清洗普通事件
+  cleanFlutterNormalEvent(data: any) {
     const { type, time, key, params } = data;
     // 手动触发
     const isCustom = type === EventType.Custom;
@@ -103,7 +103,9 @@ export class EventService {
     }
 
     return {
-      type: isCustom ? EventClickType.ClickManual : EventClickType.ClickAuto,
+      type: isCustom
+        ? EventUploadType.UploadManual
+        : EventUploadType.UploadAuto,
       name,
       triggerTime: time,
       params: isCustom ? params : null,

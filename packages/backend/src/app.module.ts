@@ -13,7 +13,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { WebUserRepository } from "./schema/web-user.schema";
 import { WebApplicationModule } from "./web-application/web-application.module";
 import { ApplicationRepository } from "./schema/application.schema";
-import { ClickEventRepository } from "./schema/event.schema";
+import { NormalEventRepository } from "./schema/event.schema";
 import { EventRecordRepository } from "./schema/event-record.schema";
 import { EventCustomRepository } from "./schema/event-custom.schema";
 import { TrackModule } from "./track/track.module";
@@ -21,7 +21,7 @@ import { EventModule } from "./event/event.module";
 import { EventRecordModule } from "./event-record/event-record.module";
 import { EventCustomModule } from "./event-custom/event-custom.module";
 import { QueueModule } from "./queue/queue.module";
-import { ClickEventModule } from "./click-event/click-event.module";
+import { NormalEventModule } from "./normal-event/normal-event.module";
 
 @Module({
   imports: [
@@ -65,7 +65,7 @@ import { ClickEventModule } from "./click-event/click-event.module";
         entities: [
           WebUserRepository,
           ApplicationRepository,
-          ClickEventRepository,
+          NormalEventRepository,
           EventRecordRepository,
           EventCustomRepository,
         ],
@@ -92,7 +92,7 @@ import { ClickEventModule } from "./click-event/click-event.module";
     EventRecordModule,
     EventCustomModule,
     QueueModule,
-    ClickEventModule,
+    NormalEventModule,
   ],
   controllers: [AppController],
   providers: [
