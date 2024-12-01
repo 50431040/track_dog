@@ -16,6 +16,11 @@ import { ApplicationRepository } from "./schema/application.schema";
 import { EventRepository } from "./schema/event.schema";
 import { EventRecordRepository } from "./schema/event-record.schema";
 import { EventCustomRepository } from "./schema/event-custom.schema";
+import { TrackModule } from "./track/track.module";
+import { EventModule } from "./event/event.module";
+import { EventRecordModule } from "./event-record/event-record.module";
+import { EventCustomModule } from "./event-custom/event-custom.module";
+import { QueueModule } from "./queue/queue.module";
 
 @Module({
   imports: [
@@ -81,6 +86,11 @@ import { EventCustomRepository } from "./schema/event-custom.schema";
     AuthModule,
     ApplicationModule,
     WebApplicationModule,
+    TrackModule,
+    EventModule,
+    EventRecordModule,
+    EventCustomModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [
