@@ -63,4 +63,14 @@ export class ApplicationService {
     );
     return updateResult.affected > 0;
   }
+
+  // 根据id获取应用信息
+  async getApplicationById(id: string) {
+    return this.applicationModel.findOne({
+      where: {
+        _id: ObjectId.createFromHexString(id),
+      },
+      select: ["_id", "name", "icon", "platform", "createTime"],
+    });
+  }
 }
