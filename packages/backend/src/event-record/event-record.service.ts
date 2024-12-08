@@ -76,7 +76,7 @@ export class EventRecordService {
             deviceCount: { $size: "$deviceCount" },
           },
         },
-        { $sort: { count: -1 } },
+        { $sort: { count: -1, deviceCount: -1, eventId: -1 } },
         { $skip: (query.page - 1) * query.pageSize },
         { $limit: query.pageSize },
       ])
