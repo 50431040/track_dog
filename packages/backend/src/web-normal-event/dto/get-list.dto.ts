@@ -3,18 +3,19 @@ import { Transform } from "class-transformer";
 import {
   IsDateString,
   IsInt,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
   Max,
   MaxLength,
   Min,
-  Validate,
 } from "class-validator";
 
 export class GetNormalEventListDto {
   @IsString()
   @IsNotEmpty()
+  @IsMongoId({ message: "应用ID格式不正确" })
   appId: string;
 
   @IsOptional()

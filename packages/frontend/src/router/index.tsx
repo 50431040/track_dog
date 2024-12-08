@@ -10,6 +10,7 @@ const UserManagerPage = lazy(() => import("../pages/UserManager/index.tsx"));
 const ApplicationManagerPage = lazy(
   () => import("../pages/ApplicationManager/index.tsx"),
 );
+const NormalEventPage = lazy(() => import("../pages/NormalEvent/index.tsx"));
 
 const LOGIN_PATH = "/login";
 const REGISTER_PATH = "/register";
@@ -23,6 +24,7 @@ const routeList = [
       { path: "/overview", element: <OverviewPage /> },
       { path: "/user-manager", element: <UserManagerPage /> },
       { path: "/application-manager", element: <ApplicationManagerPage /> },
+      { path: "/normal-event", element: <NormalEventPage /> },
     ],
   },
   { path: LOGIN_PATH, element: <LoginPage /> },

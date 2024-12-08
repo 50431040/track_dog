@@ -4,13 +4,15 @@ import {
   Dropdown,
   Layout,
   Menu,
-  Message,
+  Select,
 } from "@arco-design/web-react";
 import { IconApps, IconHome, IconUser } from "@arco-design/web-react/icon";
 import styles from "./index.module.scss";
 import useUserStore from "../../store/useUserStore";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { queryApplicationList } from "../../api/application";
+import useGlobalStore from "../../store/useGlobalStore";
 
 const MenuItem = Menu.Item;
 const Sider = Layout.Sider;
@@ -40,6 +42,13 @@ const menuList = [
     icon: <IconApps />,
     path: "/application-manager",
   },
+  // 普通事件
+  {
+    id: "normal-event",
+    name: "事件管理",
+    icon: <IconApps />,
+    path: "/normal-event",
+  },
 ];
 function Home() {
   const userInfo = useUserStore((state) => state.userInfo);
@@ -52,6 +61,16 @@ function Home() {
       return id ? [id] : [menuList[0].id];
     }
   });
+  const selectedApplication = useGlobalStore(
+    (state) => state.selectedApplication,
+  );
+  const updateSelectedApplication = useGlobalStore(
+    (state) => state.updateSelectedApplication,
+  );
+  const applicationList = useGlobalStore((state) => state.applicationList);
+  const updateApplicationList = useGlobalStore(
+    (state) => state.updateApplicationList,
+  );
 
   const onLogout = () => {
     // TODO
@@ -64,6 +83,27 @@ function Home() {
       navigate(menuItem.path);
     }
   };
+
+  const initApplicationList = async () => {
+    const application = await queryApplicationList({ page: 1, pageSize: 20 });
+    updateApplicationList(application.list);
+
+    // 默认选中第一个
+    if (application.list.length > 0 && !selectedApplication) {
+      updateSelectedApplication(application.list[0]);
+    }
+  };
+
+  const handleApplicationChange = (value: string) => {
+    const application = applicationList.find((item) => item._id === value);
+    if (application) {
+      updateSelectedApplication(application);
+    }
+  };
+
+  useEffect(() => {
+    initApplicationList();
+  }, []);
 
   return (
     <Layout className={styles.wrap}>
@@ -85,26 +125,42 @@ function Home() {
       </Sider>
       <Layout>
         <Header className={styles.header}>
-          {/* 右侧展示头像，hover显示下拉菜单 */}
-          <Dropdown
-            trigger="hover"
-            position="br"
-            droplist={
-              <Menu>
-                <MenuItem key={"logout"} onClick={onLogout}>
-                  退出登录
-                </MenuItem>
-              </Menu>
-            }
-          >
-            <Avatar
-              size={36}
-              shape="square"
-              style={{ backgroundColor: "#3370ff", cursor: "pointer" }}
+          <div>
+            {/* 应用切换 */}
+            {selectedApplication ? (
+              <Select
+                options={applicationList.map((item) => ({
+                  label: item.name,
+                  value: item._id,
+                }))}
+                value={selectedApplication?._id}
+                onChange={handleApplicationChange}
+                style={{ width: 140 }}
+              />
+            ) : null}
+          </div>
+          <div>
+            {/* 右侧展示头像，hover显示下拉菜单 */}
+            <Dropdown
+              trigger="hover"
+              position="br"
+              droplist={
+                <Menu>
+                  <MenuItem key={"logout"} onClick={onLogout}>
+                    退出登录
+                  </MenuItem>
+                </Menu>
+              }
             >
-              {userInfo?.name}
-            </Avatar>
-          </Dropdown>
+              <Avatar
+                size={36}
+                shape="square"
+                style={{ backgroundColor: "#3370ff", cursor: "pointer" }}
+              >
+                {userInfo?.name}
+              </Avatar>
+            </Dropdown>
+          </div>
         </Header>
         <Divider style={{ margin: "12px 0px" }} />
         <Layout style={{ padding: "0 24px" }}>

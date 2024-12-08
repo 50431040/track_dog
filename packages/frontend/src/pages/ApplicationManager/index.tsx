@@ -69,7 +69,7 @@ function ApplicationManager() {
   };
 
   const search = async () => {
-    setLoading(false);
+    setLoading(true);
     const res = await queryApplicationList({
       page: pagination.current,
       pageSize: pagination.pageSize,
