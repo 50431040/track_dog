@@ -64,12 +64,20 @@ export class ApplicationService {
     return updateResult.affected > 0;
   }
 
-  // 根据id获取应用信息
+  // 根据id获取应用信息（不包含权限）
   async getApplicationById(id: string) {
     return this.applicationModel.findOne({
       where: {
         _id: ObjectId.createFromHexString(id),
       },
+      select: ["_id", "name", "icon", "platform", "createTime"],
+    });
+  }
+
+  // 根据id获取应用信息（包含权限）
+  async getApplicationByIdWithPermission(id: string, userId: string) {
+    return this.applicationModel.findOne({
+      where: { _id: ObjectId.createFromHexString(id), creator: userId },
       select: ["_id", "name", "icon", "platform", "createTime"],
     });
   }
