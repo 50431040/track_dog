@@ -1,5 +1,6 @@
 import { INormalEvent } from "@/enum/event";
 import { EventRecordRepository } from "@/schema/event-record.schema";
+import { GetNormalEventListDto } from "@/web-normal-event/dto/get-list.dto";
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { MongoRepository } from "typeorm";
@@ -42,26 +43,41 @@ export class EventRecordService {
     }
   }
 
-  // 获取事件记录列表
-  async getEventRecordById(_id: string) {
-    // 查询每个事件的总事件数、事件设备数
-    const count = await this.eventRecordRepository.count({
-      eventId: _id,
-    });
+  // 给定事件id列表里面，事件总数量最多的前N个事件
+  async getTopNEvent(query: GetNormalEventListDto, eventIds: string[]) {
+    const where = { eventId: { $in: eventIds } };
+    if (query.startTime) {
+      where["triggerTime"] = {
+        $gte: new Date(query.startTime).getTime(),
+        $lte: new Date(query.endTime).getTime(),
+      };
+    }
 
-    const deviceCountResult = (await this.eventRecordRepository
+    const total = await this.eventRecordRepository.count({ where });
+
+    const result = await this.eventRecordRepository
       .aggregate([
-        { $match: { eventId: _id } },
-        { $group: { _id: "$deviceId" } },
-        { $count: "deviceCount" },
+        { $match: where },
+        {
+          $group: {
+            _id: "$eventId",
+            count: { $sum: 1 },
+            deviceCount: { $addToSet: "$deviceId" },
+          },
+        },
+        {
+          $project: {
+            eventId: "$_id",
+            count: 1,
+            deviceCount: { $size: "$deviceCount" },
+          },
+        },
+        { $sort: { count: -1 } },
+        { $skip: (query.page - 1) * query.pageSize },
+        { $limit: query.pageSize },
       ])
-      .toArray()) as unknown as { deviceCount: number }[];
+      .toArray();
 
-    return {
-      _id,
-      count,
-      deviceCount:
-        deviceCountResult.length > 0 ? deviceCountResult[0].deviceCount : 0,
-    };
+    return [result, total];
   }
 }

@@ -59,4 +59,17 @@ export class NormalEventService {
     });
     return data;
   }
+
+  // 通过名称匹配事件
+  async matchEventByName(appId: string, keyword: string) {
+    const where = { appId };
+    if (keyword) {
+      where["name"] = { $regex: keyword, $options: "i" };
+    }
+    const event = await this.eventRepository.find({
+      where,
+      select: ["_id", "name", "type", "createTime"],
+    });
+    return event;
+  }
 }

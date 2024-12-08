@@ -3,6 +3,8 @@ import { NormalEventService } from "@/normal-event/normal-event.service";
 import { Controller, Get, NotFoundException, Query, Req } from "@nestjs/common";
 import { ApplicationService } from "@/application/application.service";
 import { EventRecordService } from "@/event-record/event-record.service";
+import { NormalEventRepository } from "@/schema/event.schema";
+import { EventRecordRepository } from "@/schema/event-record.schema";
 
 @Controller("web/normal-event")
 export class WebNormalEventController {
@@ -25,25 +27,29 @@ export class WebNormalEventController {
       throw new NotFoundException();
     }
 
-    // 获取普通事件列表
-    const [list, total] =
-      await this.normalEventService.getNormalEventList(query);
+    // 有关键字，先匹配事件
+    const list: NormalEventRepository[] =
+      await this.normalEventService.matchEventByName(
+        query.appId,
+        query.keyword,
+      );
 
-    // 查询事件记录数据
-    const recordData = await Promise.all(
-      list.map(async (item) => {
-        const record = await this.eventRecordService.getEventRecordById(
-          item._id.toString(),
-        );
-        return {
-          ...item,
-          ...record,
-        };
-      }),
+    // 事件总数量最多的前N个事件
+    const [topNEvent, total] = await this.eventRecordService.getTopNEvent(
+      query,
+      list.map((item) => item._id.toString()),
     );
 
+    const result = (topNEvent as EventRecordRepository[]).map((item) => {
+      const event = list.find((e) => e._id.toString() === item.eventId);
+      return {
+        ...event,
+        ...item,
+      };
+    });
+
     return {
-      list: recordData,
+      list: result,
       total,
     };
   }
