@@ -53,7 +53,11 @@ export class EventRecordService {
       };
     }
 
-    const total = await this.eventRecordRepository.count({ where });
+    // 查询唯一的eventId总数
+    const distinctResult = await this.eventRecordRepository.distinct(
+      "eventId",
+      where,
+    );
 
     const result = await this.eventRecordRepository
       .aggregate([
@@ -78,6 +82,6 @@ export class EventRecordService {
       ])
       .toArray();
 
-    return [result, total];
+    return [result, distinctResult?.length || 0];
   }
 }

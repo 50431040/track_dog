@@ -2,17 +2,20 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { IApplication } from "../dto/Application";
+import dayjs from "dayjs";
 
 // state类型定义
 type State = {
   selectedApplication: IApplication | null;
   applicationList: IApplication[];
+  dateRange: [Date, Date];
 };
 
 // action类型定义
 type Action = {
   updateSelectedApplication: (application: IApplication) => void;
   updateApplicationList: (applicationList: IApplication[]) => void;
+  updateDateRange: (dateRange: [Date, Date]) => void;
 };
 
 const useGlobalStore = create(
@@ -23,6 +26,7 @@ const useGlobalStore = create(
       (set) => ({
         selectedApplication: null,
         applicationList: [],
+        dateRange: [dayjs().subtract(1, "month").toDate(), dayjs().toDate()],
         updateSelectedApplication: (application) =>
           set(() => {
             return {
@@ -33,6 +37,12 @@ const useGlobalStore = create(
           set(() => {
             return {
               applicationList,
+            };
+          }),
+        updateDateRange: (dateRange) =>
+          set(() => {
+            return {
+              dateRange,
             };
           }),
       }),

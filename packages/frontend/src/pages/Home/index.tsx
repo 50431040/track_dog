@@ -1,7 +1,8 @@
 import {
   Avatar,
-  Divider,
+  DatePicker,
   Dropdown,
+  Grid,
   Layout,
   Menu,
   Select,
@@ -13,6 +14,7 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { queryApplicationList } from "../../api/application";
 import useGlobalStore from "../../store/useGlobalStore";
+import dayjs from "dayjs";
 
 const MenuItem = Menu.Item;
 const Sider = Layout.Sider;
@@ -50,6 +52,37 @@ const menuList = [
     path: "/normal-event",
   },
 ];
+
+const shortcuts = [
+  {
+    text: "昨天",
+    value: () => [dayjs().subtract(1, "day"), dayjs().subtract(1, "day")],
+  },
+  {
+    text: "今天",
+    value: () => [dayjs(), dayjs()],
+  },
+  {
+    text: "最近一周",
+    value: () => [dayjs().subtract(1, "week"), dayjs()],
+  },
+  {
+    text: "最近一个月",
+    value: () => [dayjs().subtract(1, "month"), dayjs()],
+  },
+  {
+    text: "最近3个月",
+    value: () => [dayjs().subtract(3, "month"), dayjs()],
+  },
+  {
+    text: "最近半年",
+    value: () => [dayjs().subtract(6, "month"), dayjs()],
+  },
+  {
+    text: "最近一年",
+    value: () => [dayjs().subtract(1, "year"), dayjs()],
+  },
+];
 function Home() {
   const userInfo = useUserStore((state) => state.userInfo);
   const navigate = useNavigate();
@@ -71,6 +104,8 @@ function Home() {
   const updateApplicationList = useGlobalStore(
     (state) => state.updateApplicationList,
   );
+  const dateRange = useGlobalStore((state) => state.dateRange);
+  const updateDateRange = useGlobalStore((state) => state.updateDateRange);
 
   const onLogout = () => {
     // TODO
@@ -101,6 +136,10 @@ function Home() {
     }
   };
 
+  const handleDateRangeChange = (dateString: string[]) => {
+    updateDateRange([new Date(dateString[0]), new Date(dateString[1])]);
+  };
+
   useEffect(() => {
     initApplicationList();
   }, []);
@@ -123,7 +162,7 @@ function Home() {
           ))}
         </Menu>
       </Sider>
-      <Layout>
+      <Layout style={{ backgroundColor: "#f7f7f8" }}>
         <Header className={styles.header}>
           <div>
             {/* 应用切换 */}
@@ -162,11 +201,32 @@ function Home() {
             </Dropdown>
           </div>
         </Header>
-        <Divider style={{ margin: "12px 0px" }} />
         <Layout style={{ padding: "0 24px" }}>
           <Content>
             {/* 动态内容 */}
-            <Outlet />
+            <div className={styles.content}>
+              {/* 日期选择器 */}
+              <Grid.Row
+                align="center"
+                justify="end"
+                style={{ margin: "16px 0" }}
+              >
+                {/* 默认值为前一个月 */}
+                <DatePicker.RangePicker
+                  shortcutsPlacementLeft
+                  clearRangeOnReselect
+                  shortcuts={shortcuts}
+                  defaultValue={dateRange}
+                  onChange={handleDateRangeChange}
+                  style={{ width: 240 }}
+                  allowClear={false}
+                  className={styles.datePicker}
+                />
+              </Grid.Row>
+              <div style={{ backgroundColor: "#fff", padding: "12px" }}>
+                <Outlet />
+              </div>
+            </div>
           </Content>
           <Footer>
             <div className={styles.copyright}>

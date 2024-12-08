@@ -14,6 +14,7 @@ import { INormalEvent } from "../../dto/NormalEvent";
 import useGlobalStore from "../../store/useGlobalStore";
 import { useNavigate } from "react-router-dom";
 import { NormalEventType } from "../../enum/normalEvent";
+import dayjs from "dayjs";
 
 const InputSearch = Input.Search;
 function NormalEventPage() {
@@ -28,6 +29,7 @@ function NormalEventPage() {
   const selectedApplication = useGlobalStore(
     (state) => state.selectedApplication,
   );
+  const dateRange = useGlobalStore((state) => state.dateRange);
 
   const navigate = useNavigate();
 
@@ -43,6 +45,12 @@ function NormalEventPage() {
       page: pagination.current!,
       pageSize: pagination.pageSize!,
       keyword,
+      startTime: new Date(
+        dayjs(dateRange[0]).format("YYYY-MM-DD 00:00:00"),
+      ).toISOString(),
+      endTime: new Date(
+        dayjs(dateRange[1]).format("YYYY-MM-DD 23:59:59"),
+      ).toISOString(),
     }).finally(() => {
       setLoading(false);
     });
@@ -66,7 +74,13 @@ function NormalEventPage() {
     }
 
     search();
-  }, [pagination.current, pagination.pageSize, keyword, selectedApplication]);
+  }, [
+    pagination.current,
+    pagination.pageSize,
+    keyword,
+    selectedApplication,
+    dateRange,
+  ]);
 
   useEffect(() => {
     setPagination({ ...pagination, current: 1 });
@@ -96,7 +110,7 @@ function NormalEventPage() {
 
   return (
     <>
-      <Grid.Row justify="start">
+      <Grid.Row justify="start" style={{ marginBottom: "12px" }}>
         <InputSearch
           searchButton
           placeholder="输入关键字检索"
@@ -104,10 +118,10 @@ function NormalEventPage() {
           onSearch={onSearch}
         />
       </Grid.Row>
-      <Divider />
       <Table
         columns={columns}
         showHeader
+        border={false}
         rowKey="_id"
         loading={loading}
         pagination={pagination}
