@@ -20,3 +20,16 @@ export interface INormalEventListDTO {
   list: INormalEvent[];
   total: number;
 }
+
+export interface IQueryNormalEventTrendParams {
+  appId: string;
+  eventId: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface INormalEventTrend {
+  date: string;
+  count: number;
+  deviceCount: number;
+}

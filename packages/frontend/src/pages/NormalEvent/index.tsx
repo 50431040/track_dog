@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { queryNormalEventList } from "../../api/normalEvent";
 import { INormalEvent } from "../../dto/NormalEvent";
 import useGlobalStore from "../../store/useGlobalStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { NormalEventType } from "../../enum/normalEvent";
 import dayjs from "dayjs";
 
@@ -32,6 +32,7 @@ function NormalEventPage() {
   const dateRange = useGlobalStore((state) => state.dateRange);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onSearch = (value: string) => {
     setKeyword(value);
@@ -49,7 +50,7 @@ function NormalEventPage() {
         dayjs(dateRange[0]).format("YYYY-MM-DD 00:00:00"),
       ).toISOString(),
       endTime: new Date(
-        dayjs(dateRange[1]).format("YYYY-MM-DD 23:59:59"),
+        dayjs(dateRange[1]).add(1, "day").format("YYYY-MM-DD 00:00:00"),
       ).toISOString(),
     }).finally(() => {
       setLoading(false);
@@ -64,7 +65,7 @@ function NormalEventPage() {
 
   const handleDetail = (record: INormalEvent) => {
     // 跳转事件详情页面 TODO
-    navigate(`/event-detail?eventId=${record._id}`);
+    navigate(`/normal-event/detail/${record._id}`);
   };
 
   useEffect(() => {
@@ -108,6 +109,12 @@ function NormalEventPage() {
     },
   ];
 
+  // 如果当前路径包含 detail，说明是详情页面，只渲染 Outlet
+  if (location.pathname.includes("/normal-event/detail/")) {
+    return <Outlet />;
+  }
+
+  // 原有的列表页面内容
   return (
     <>
       <Grid.Row justify="start" style={{ marginBottom: "12px" }}>
