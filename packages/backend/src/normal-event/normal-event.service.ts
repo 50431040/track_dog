@@ -3,6 +3,7 @@ import { NormalEventRepository } from "@/schema/event.schema";
 import { GetNormalEventListDto } from "@/web-normal-event/dto/get-list.dto";
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ObjectId } from "mongodb";
 import { MongoRepository } from "typeorm";
 
 @Injectable()
@@ -69,6 +70,14 @@ export class NormalEventService {
     const event = await this.eventRepository.find({
       where,
       select: ["_id", "name", "type", "createTime"],
+    });
+    return event;
+  }
+
+  // 校验事件权限
+  async validateEvent(appId: string, eventId: string) {
+    const event = await this.eventRepository.findOne({
+      where: { appId, _id: ObjectId.createFromHexString(eventId) },
     });
     return event;
   }

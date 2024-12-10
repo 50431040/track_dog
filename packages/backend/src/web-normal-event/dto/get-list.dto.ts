@@ -35,12 +35,10 @@ export class GetNormalEventListDto {
   @Max(20)
   pageSize: number = 10;
 
-  @IsOptional()
   @IsDateString()
   @ValidatePeriod()
   startTime?: string;
 
-  @IsOptional()
   @IsDateString()
   endTime?: string;
 }

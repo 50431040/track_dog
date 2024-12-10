@@ -84,4 +84,47 @@ export class EventRecordService {
 
     return [result, distinctResult?.length || 0];
   }
+
+  // 获取事件趋势（按天统计次数和设备数）
+  async getEventTrend(eventId: string, startTime: string, endTime: string) {
+    const where = {
+      eventId,
+      createTime: {
+        $gte: new Date(startTime).getTime(),
+        $lte: new Date(endTime).getTime(),
+      },
+    };
+    // 按日期分组，统计每日的次数和设备数
+    const result = await this.eventRecordRepository
+      .aggregate([
+        { $match: where },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: "%Y-%m-%d",
+                date: { $toDate: "$createTime" },
+              },
+            },
+            count: { $sum: 1 },
+            deviceCount: { $addToSet: "$deviceId" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: "$_id",
+            count: 1,
+            deviceCount: { $size: "$deviceCount" },
+          },
+        },
+      ])
+      .toArray();
+
+    return result as unknown as {
+      date: string;
+      count: number;
+      deviceCount: number;
+    }[];
+  }
 }

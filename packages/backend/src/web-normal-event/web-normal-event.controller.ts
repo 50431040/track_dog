@@ -5,6 +5,7 @@ import { ApplicationService } from "@/application/application.service";
 import { EventRecordService } from "@/event-record/event-record.service";
 import { NormalEventRepository } from "@/schema/event.schema";
 import { EventRecordRepository } from "@/schema/event-record.schema";
+import { GetEventTrendDto } from "./dto/trend.dto";
 
 @Controller("web/normal-event")
 export class WebNormalEventController {
@@ -52,5 +53,59 @@ export class WebNormalEventController {
       list: result,
       total,
     };
+  }
+
+  // 获取事件趋势（按天）
+  @Get("trend")
+  async getEventTrend(@Query() query: GetEventTrendDto, @Req() req) {
+    const userId = req.user.id;
+    // 应用权限校验
+    const application =
+      await this.applicationService.getApplicationByIdWithPermission(
+        query.appId,
+        userId,
+      );
+
+    if (!application) {
+      throw new NotFoundException();
+    }
+
+    // 事件权限校验
+    const event = await this.normalEventService.validateEvent(
+      query.appId,
+      query.eventId,
+    );
+    if (!event) {
+      throw new NotFoundException();
+    }
+
+    // 获取事件趋势
+    const trendData = await this.eventRecordService.getEventTrend(
+      query.eventId,
+      query.startTime,
+      query.endTime,
+    );
+
+    // trend中缺失数据的日期都赋值为0
+    const result = [];
+    for (
+      let d = new Date(query.startTime);
+      d <= new Date(query.endTime);
+      d.setDate(d.getDate() + 1)
+    ) {
+      const date = new Date(d).toISOString().split("T")[0];
+      const item = trendData.find((t) => t.date === date);
+      if (!item) {
+        result.push({
+          date,
+          count: 0,
+          deviceCount: 0,
+        });
+      } else {
+        result.push(item);
+      }
+    }
+
+    return result;
   }
 }
