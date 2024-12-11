@@ -6,6 +6,7 @@ import { queryNormalEventTrend } from "../../api/normalEvent";
 import useGlobalStore from "../../store/useGlobalStore";
 import dayjs from "dayjs";
 import { INormalEventTrend } from "../../dto/NormalEvent";
+import ParamsAnalysis from "./components/ParamsAnalysis";
 
 const TabPane = Tabs.TabPane;
 const typeMap = {
@@ -116,7 +117,9 @@ function NormalEventDetailPage() {
           style={{ width: "calc(100% - 100px)", height: 600, margin: "0 auto" }}
         ></div>
       </TabPane>
-      <TabPane key="analysis" title="参数分析"></TabPane>
+      <TabPane key="analysis" title="参数分析">
+        <ParamsAnalysis />
+      </TabPane>
     </Tabs>
   );
 }
