@@ -223,7 +223,7 @@ function Home() {
                   className={styles.datePicker}
                 />
               </Grid.Row>
-              <div style={{ backgroundColor: "#fff", padding: "12px" }}>
+              <div className={styles.content_section}>
                 <Outlet />
               </div>
             </div>

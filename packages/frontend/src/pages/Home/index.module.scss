@@ -20,8 +20,19 @@
   height: 100%;
   box-sizing: border-box;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
 }
 
 .datePicker {
   background-color: #fff;
+}
+
+.content_section {
+  background-color: #fff;
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
+  box-sizing: border-box;
 }

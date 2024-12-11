@@ -1,12 +1,17 @@
-import { Message, Tabs } from "@arco-design/web-react";
+import { Button, Grid, Message, Space, Tabs } from "@arco-design/web-react";
 import { useParams } from "react-router-dom";
 import * as echarts from "echarts";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { queryNormalEventTrend } from "../../api/normalEvent";
 import useGlobalStore from "../../store/useGlobalStore";
 import dayjs from "dayjs";
+import { INormalEventTrend } from "../../dto/NormalEvent";
 
 const TabPane = Tabs.TabPane;
+const typeMap = {
+  count: "事件数",
+  deviceCount: "事件达成设备数",
+};
 
 function NormalEventDetailPage() {
   const id = useParams().id;
@@ -15,7 +20,9 @@ function NormalEventDetailPage() {
   const dateRange = useGlobalStore((state) => state.dateRange);
 
   const trendChartRef = useRef<echarts.ECharts>();
-  console.log(id);
+  const [selectedType, setSelectedType] =
+    useState<keyof typeof typeMap>("count");
+  const [trendData, setTrendData] = useState<INormalEventTrend[]>([]);
 
   const initTrendChart = () => {
     if (!id) {
@@ -40,6 +47,7 @@ function NormalEventDetailPage() {
       ).toISOString(),
     })
       .then((data) => {
+        setTrendData(data);
         trendChartRef.current!.setOption({
           xAxis: {
             type: "category",
@@ -50,7 +58,7 @@ function NormalEventDetailPage() {
           },
           series: [
             {
-              data: data.map((item) => item.count),
+              data: data.map((item) => item[selectedType]),
               type: "line",
             },
           ],
@@ -59,6 +67,22 @@ function NormalEventDetailPage() {
       .finally(() => {
         trendChartRef.current!.hideLoading();
       });
+  };
+
+  const handleTypeChange = (type: keyof typeof typeMap) => {
+    if (type === selectedType) {
+      return;
+    }
+
+    setSelectedType(type);
+    trendChartRef.current?.setOption({
+      series: [
+        {
+          data: trendData.map((item) => item[type]),
+          type: "line",
+        },
+      ],
+    });
   };
 
   useEffect(() => {
@@ -74,6 +98,19 @@ function NormalEventDetailPage() {
   return (
     <Tabs defaultActiveTab="trend">
       <TabPane key="trend" title="事件趋势">
+        <Grid.Row style={{ paddingLeft: 12 }}>
+          <Space>
+            {Object.keys(typeMap).map((key) => (
+              <Button
+                key={key}
+                type={selectedType === key ? "primary" : "secondary"}
+                onClick={() => handleTypeChange(key as keyof typeof typeMap)}
+              >
+                {typeMap[key as keyof typeof typeMap]}
+              </Button>
+            ))}
+          </Space>
+        </Grid.Row>
         <div
           id="trend_chart"
           style={{ width: "calc(100% - 100px)", height: 600, margin: "0 auto" }}
