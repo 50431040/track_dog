@@ -24,7 +24,23 @@ export class EventRecordService {
         triggerTime,
         sdkVersion,
         version,
+        params,
       } = data;
+
+      // 只对真实的对象进行转换
+      let customParams = undefined;
+      if (Object.prototype.toString.call(params) === "[object Object]") {
+        const temp = {};
+        for (const key in params) {
+          let value = params[key];
+          const valueType = typeof value;
+          if (valueType && valueType === "object") {
+            value = JSON.stringify(value);
+          }
+          temp[key] = value;
+        }
+        customParams = temp;
+      }
 
       const eventRecord = this.eventRecordRepository.create({
         eventId,
@@ -35,6 +51,7 @@ export class EventRecordService {
         triggerTime,
         sdkVersion,
         version,
+        custom: customParams,
       });
 
       return await this.eventRecordRepository.save(eventRecord);

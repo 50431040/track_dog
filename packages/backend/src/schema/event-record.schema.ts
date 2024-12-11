@@ -41,4 +41,8 @@ export class EventRecordRepository extends BaseCreateEntity {
   // 客户端版本
   @Column({ length: 100, nullable: true })
   version: string;
+
+  // 自定义参数
+  @Column({ type: "json", nullable: true })
+  custom: Record<string, string> | null;
 }

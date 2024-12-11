@@ -40,16 +40,6 @@ export class NormalEventConsumer {
     );
     if (!eventRecord) {
       this.logger.error("保存事件记录失败", data);
-      return;
-    }
-
-    // 保存事件自定义参数
-    if (data.params) {
-      await this.eventCustomService.saveEventCustomParam(
-        event._id.toString(),
-        eventRecord._id.toString(),
-        data.params,
-      );
     }
   }
 }
