@@ -5,7 +5,7 @@ import { ApplicationService } from "@/application/application.service";
 import { EventRecordService } from "@/event-record/event-record.service";
 import { NormalEventRepository } from "@/schema/event.schema";
 import { EventRecordRepository } from "@/schema/event-record.schema";
-import { GetEventTrendDto } from "./dto/trend.dto";
+import { GetEventCustomParamsDto, GetEventTrendDto } from "./dto/trend.dto";
 
 @Controller("web/normal-event")
 export class WebNormalEventController {
@@ -107,5 +107,42 @@ export class WebNormalEventController {
     }
 
     return result;
+  }
+
+  // 获取事件自定义参数信息
+  @Get("custom")
+  async getEventCustomParams(
+    @Query() query: GetEventCustomParamsDto,
+    @Req() req,
+  ) {
+    const userId = req.user.id;
+    // 应用权限校验
+    const application =
+      await this.applicationService.getApplicationByIdWithPermission(
+        query.appId,
+        userId,
+      );
+
+    if (!application) {
+      throw new NotFoundException();
+    }
+
+    // 事件权限校验
+    const event = await this.normalEventService.validateEvent(
+      query.appId,
+      query.eventId,
+    );
+    if (!event) {
+      throw new NotFoundException();
+    }
+
+    // 获取事件自定义参数信息
+    const customParams = await this.eventRecordService.getCustomParamsInfo(
+      query.eventId,
+      query.startTime,
+      query.endTime,
+    );
+
+    return customParams;
   }
 }

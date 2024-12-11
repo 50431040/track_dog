@@ -19,3 +19,5 @@ export class GetEventTrendDto {
   @IsDateString()
   endTime: string;
 }
+
+export class GetEventCustomParamsDto extends GetEventTrendDto {}

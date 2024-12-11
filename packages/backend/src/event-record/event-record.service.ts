@@ -144,4 +144,84 @@ export class EventRecordService {
       deviceCount: number;
     }[];
   }
+
+  // 获取事件自定义参数信息
+  async getCustomParamsInfo(
+    eventId: string,
+    startTime: string,
+    endTime: string,
+  ) {
+    const where = {
+      eventId,
+      triggerTime: {
+        $gte: new Date(startTime).getTime(),
+        $lte: new Date(endTime).getTime(),
+      },
+      custom: { $exists: true },
+    };
+    // 查询custom字段每个参数名称对应的总数量、发生设备数（需要去重）
+    const queryResult = await this.eventRecordRepository
+      .aggregate([
+        {
+          $match: where,
+        },
+        {
+          $project: {
+            customEntries: { $objectToArray: "$custom" },
+            deviceId: 1,
+          },
+        },
+        {
+          $unwind: "$customEntries",
+        },
+        {
+          $group: {
+            _id: "$customEntries.k",
+            count: { $sum: 1 },
+            deviceCount: { $addToSet: "$deviceId" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id",
+            count: 1,
+            deviceCount: { $size: "$deviceCount" },
+          },
+        },
+        {
+          $sort: { count: -1 },
+        },
+      ])
+      .toArray();
+
+    // 所有参数名称的设备数
+    const totalDeviceCount = await this.eventRecordRepository
+      .distinct("deviceId", where)
+      .then((res) => res.length);
+
+    // 总次数
+    const totalCount = await this.eventRecordRepository
+      .countBy(where)
+      .then((res) => res);
+
+    const result = (
+      queryResult as unknown as {
+        name: string;
+        count: number;
+        deviceCount: number;
+        deviceCountRatio: string;
+        countRatio: string;
+      }[]
+    ).map((item) => {
+      // 百分比
+      item.deviceCountRatio = `${Math.round(
+        (item.deviceCount / totalDeviceCount) * 100,
+      )}%`;
+      // 次数占比
+      item.countRatio = `${Math.round((item.count / totalCount) * 100)}%`;
+      return item;
+    });
+    return result;
+  }
 }
