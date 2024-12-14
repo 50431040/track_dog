@@ -3,6 +3,7 @@ import { BaseCreateEntity } from "@/base/entity/base-create.entity";
 
 // 事件记录表
 @Entity({ name: "event_record" })
+@Index("idx_eventId_triggerTime", ["eventId", "triggerTime"])
 export class EventRecordRepository extends BaseCreateEntity {
   // 事件ID
   @Column({ length: 32 })
@@ -44,5 +45,6 @@ export class EventRecordRepository extends BaseCreateEntity {
 
   // 自定义参数
   @Column({ type: "json", nullable: true })
+  @Index()
   custom: Record<string, string> | null;
 }

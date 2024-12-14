@@ -62,7 +62,10 @@ export class EventRecordService {
 
   // 给定事件id列表里面，事件总数量最多的前N个事件
   async getTopNEvent(query: GetNormalEventListDto, eventIds: string[]) {
-    const where = { eventId: { $in: eventIds } };
+    const where = {
+      eventId: { $in: eventIds },
+    };
+
     if (query.startTime) {
       where["triggerTime"] = {
         $gte: new Date(query.startTime).getTime(),
@@ -76,30 +79,38 @@ export class EventRecordService {
       where,
     );
 
-    const result = await this.eventRecordRepository
+    const countResult = (await this.eventRecordRepository
       .aggregate([
-        { $match: where },
+        {
+          $match: where,
+        },
         {
           $group: {
             _id: "$eventId",
             count: { $sum: 1 },
-            deviceCount: { $addToSet: "$deviceId" },
           },
         },
-        {
-          $project: {
-            eventId: "$_id",
-            count: 1,
-            deviceCount: { $size: "$deviceCount" },
-          },
-        },
-        { $sort: { count: -1, deviceCount: -1, eventId: -1 } },
+        { $sort: { count: -1 } },
         { $skip: (query.page - 1) * query.pageSize },
         { $limit: query.pageSize },
       ])
-      .toArray();
+      .toArray()) as unknown as { _id: string; count: number }[];
 
-    return [result, distinctResult?.length || 0];
+    // 只对top N的事件计算设备数
+    const eventDetails = await Promise.all(
+      countResult.map(async (item) => {
+        const deviceCount = await this.eventRecordRepository
+          .distinct("deviceId", { ...where, eventId: item._id })
+          .then((res) => res.length);
+
+        return {
+          eventId: item._id,
+          count: item.count,
+          deviceCount,
+        };
+      }),
+    );
+    return [eventDetails, distinctResult?.length || 0];
   }
 
   // 获取事件趋势（按天统计次数和设备数）
@@ -120,7 +131,7 @@ export class EventRecordService {
             _id: {
               $dateToString: {
                 format: "%Y-%m-%d",
-                date: { $toDate: "$createTime" },
+                date: { $toDate: "$triggerTime" },
               },
             },
             count: { $sum: 1 },
