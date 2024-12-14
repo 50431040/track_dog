@@ -21,3 +21,9 @@ export class GetEventTrendDto {
 }
 
 export class GetEventCustomParamsDto extends GetEventTrendDto {}
+
+export class GetCustomParamsValueDto extends GetEventTrendDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+}

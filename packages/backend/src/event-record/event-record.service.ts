@@ -233,4 +233,59 @@ export class EventRecordService {
     });
     return result;
   }
+
+  // 获取事件自定义参数值
+  async getCustomParamsValue(
+    eventId: string,
+    startTime: string,
+    endTime: string,
+    name: string,
+  ) {
+    const where = {
+      eventId,
+    };
+
+    if (startTime) {
+      where["triggerTime"] = {
+        $gte: new Date(startTime).getTime(),
+        $lte: new Date(endTime).getTime(),
+      };
+    }
+
+    // 查询custom中name字段所有的值以及占比
+    const queryResult = (await this.eventRecordRepository
+      .aggregate([
+        { $match: where },
+        { $unwind: "$custom" },
+        { $match: { [`custom.${name}`]: { $exists: true } } },
+        {
+          $group: {
+            _id: `$custom.${name}`,
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { count: -1 } },
+        {
+          $project: {
+            _id: 0,
+            value: "$_id",
+            count: 1,
+          },
+        },
+      ])
+      .toArray()) as unknown as {
+      value: string;
+      count: number;
+      ratio: string;
+    }[];
+
+    const totalCount = queryResult.reduce((acc, item) => acc + item.count, 0);
+
+    const result = queryResult.map((item) => {
+      item.ratio = `${((item.count / totalCount) * 100).toFixed(2)}%`;
+      return item;
+    });
+
+    return result;
+  }
 }

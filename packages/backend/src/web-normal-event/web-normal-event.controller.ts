@@ -5,7 +5,11 @@ import { ApplicationService } from "@/application/application.service";
 import { EventRecordService } from "@/event-record/event-record.service";
 import { NormalEventRepository } from "@/schema/event.schema";
 import { EventRecordRepository } from "@/schema/event-record.schema";
-import { GetEventCustomParamsDto, GetEventTrendDto } from "./dto/trend.dto";
+import {
+  GetCustomParamsValueDto,
+  GetEventCustomParamsDto,
+  GetEventTrendDto,
+} from "./dto/trend.dto";
 
 @Controller("web/normal-event")
 export class WebNormalEventController {
@@ -59,25 +63,7 @@ export class WebNormalEventController {
   @Get("trend")
   async getEventTrend(@Query() query: GetEventTrendDto, @Req() req) {
     const userId = req.user.id;
-    // 应用权限校验
-    const application =
-      await this.applicationService.getApplicationByIdWithPermission(
-        query.appId,
-        userId,
-      );
-
-    if (!application) {
-      throw new NotFoundException();
-    }
-
-    // 事件权限校验
-    const event = await this.normalEventService.validateEvent(
-      query.appId,
-      query.eventId,
-    );
-    if (!event) {
-      throw new NotFoundException();
-    }
+    await this.validateApplicationAndEvent(query.appId, query.eventId, userId);
 
     // 获取事件趋势
     const trendData = await this.eventRecordService.getEventTrend(
@@ -116,25 +102,7 @@ export class WebNormalEventController {
     @Req() req,
   ) {
     const userId = req.user.id;
-    // 应用权限校验
-    const application =
-      await this.applicationService.getApplicationByIdWithPermission(
-        query.appId,
-        userId,
-      );
-
-    if (!application) {
-      throw new NotFoundException();
-    }
-
-    // 事件权限校验
-    const event = await this.normalEventService.validateEvent(
-      query.appId,
-      query.eventId,
-    );
-    if (!event) {
-      throw new NotFoundException();
-    }
+    await this.validateApplicationAndEvent(query.appId, query.eventId, userId);
 
     // 获取事件自定义参数信息
     const customParams = await this.eventRecordService.getCustomParamsInfo(
@@ -144,5 +112,53 @@ export class WebNormalEventController {
     );
 
     return customParams;
+  }
+
+  // 校验应用和事件权限
+  async validateApplicationAndEvent(
+    appId: string,
+    eventId: string,
+    userId: string,
+  ) {
+    // 应用权限校验
+    const application =
+      await this.applicationService.getApplicationByIdWithPermission(
+        appId,
+        userId,
+      );
+
+    if (!application) {
+      throw new NotFoundException();
+    }
+
+    // 事件权限校验
+    const event = await this.normalEventService.validateEvent(appId, eventId);
+    if (!event) {
+      throw new NotFoundException();
+    }
+  }
+
+  // 获取事件自定义参数值分布
+  @Get("custom/value")
+  async getEventCustomParamsValue(
+    @Query() query: GetCustomParamsValueDto,
+    @Req() req,
+  ) {
+    await this.validateApplicationAndEvent(
+      query.appId,
+      query.eventId,
+      req.user.id,
+    );
+
+    // 获取事件自定义参数值分布
+    const customParamsValue =
+      await this.eventRecordService.getCustomParamsValue(
+        query.eventId,
+        query.startTime,
+        query.endTime,
+        query.name,
+      );
+
+    return customParamsValue;
   }
 }
