@@ -43,3 +43,14 @@ export interface ICustomParamsInfo {
   deviceCountRatio: string;
   countRatio: string;
 }
+
+export interface IQueryCustomParamsValueParams
+  extends IQueryCustomParamsInfoParams {
+  name: string;
+}
+
+export interface ICustomParamsValue {
+  value: string;
+  count: number;
+  ratio: string;
+}

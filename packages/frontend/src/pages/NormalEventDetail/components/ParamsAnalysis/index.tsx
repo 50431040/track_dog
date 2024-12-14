@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import useGlobalStore from "../../../../store/useGlobalStore";
 import { transformToISOString } from "../../../../utils/format";
 import { ICustomParamsInfo } from "../../../../dto/NormalEvent";
+import ParamsValueTable from "../ParamsValueTable";
 
 function ParamsAnalysis() {
   const [dataSource, setDataSource] = useState<ICustomParamsInfo[]>([]);
@@ -19,6 +20,7 @@ function ParamsAnalysis() {
   const application = useGlobalStore((state) => state.selectedApplication);
   const dateRange = useGlobalStore((state) => state.dateRange);
   const [valueDrawerVisible, setValueDrawerVisible] = useState(false);
+  const [paramsName, setParamsName] = useState<string>("");
 
   const initData = async () => {
     if (!eventId) {
@@ -44,6 +46,7 @@ function ParamsAnalysis() {
   };
 
   const handleDetail = (name: string) => {
+    setParamsName(name);
     setValueDrawerVisible(true);
   };
 
@@ -90,9 +93,7 @@ function ParamsAnalysis() {
         }}
         footer={null}
       >
-        <div>Here is an example text.</div>
-
-        <div>Here is an example text.</div>
+        <ParamsValueTable name={paramsName} />
       </Drawer>
     </>
   );
