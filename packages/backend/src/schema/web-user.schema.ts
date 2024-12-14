@@ -30,7 +30,7 @@ export class WebUserRepository extends BaseEntity {
 
   // 是否删除
   @Column({ default: false })
-  isDelete: boolean;
+  isDelete: boolean = false;
 
   // 删除时间
   @Column()
