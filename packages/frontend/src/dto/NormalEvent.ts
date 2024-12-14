@@ -33,3 +33,13 @@ export interface INormalEventTrend {
   count: number;
   deviceCount: number;
 }
+
+export type IQueryCustomParamsInfoParams = IQueryNormalEventTrendParams;
+
+export interface ICustomParamsInfo {
+  name: string;
+  count: number;
+  deviceCount: number;
+  deviceCountRatio: string;
+  countRatio: string;
+}

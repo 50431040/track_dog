@@ -226,11 +226,9 @@ export class EventRecordService {
       }[]
     ).map((item) => {
       // 百分比
-      item.deviceCountRatio = `${Math.round(
-        (item.deviceCount / totalDeviceCount) * 100,
-      )}%`;
+      item.deviceCountRatio = `${((item.deviceCount / totalDeviceCount) * 100).toFixed(2)}%`;
       // 次数占比
-      item.countRatio = `${Math.round((item.count / totalCount) * 100)}%`;
+      item.countRatio = `${((item.count / totalCount) * 100).toFixed(2)}%`;
       return item;
     });
     return result;
