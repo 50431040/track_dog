@@ -23,6 +23,7 @@ import { EventCustomModule } from "./event-custom/event-custom.module";
 import { QueueModule } from "./queue/queue.module";
 import { NormalEventModule } from "./normal-event/normal-event.module";
 import { WebNormalEventModule } from "./web-normal-event/web-normal-event.module";
+import { DeviceModule } from "./device/device.module";
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { WebNormalEventModule } from "./web-normal-event/web-normal-event.module
     QueueModule,
     NormalEventModule,
     WebNormalEventModule,
+    DeviceModule,
   ],
   controllers: [AppController],
   providers: [

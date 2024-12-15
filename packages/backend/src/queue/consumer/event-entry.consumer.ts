@@ -38,8 +38,10 @@ export class EventEntryConsumer {
       }
 
       job.data.application = application;
-      // 数据清洗
+      // 事件数据清洗
       await this.eventService.eventCleanProducer(job.data);
+      // 设备信息清洗
+      await this.eventService.deviceCleanProducer(job.data);
     } catch (error) {
       this.logger.error(error);
     }

@@ -23,7 +23,12 @@ export class EventService {
 
   // 清洗Flutter平台的事件（包括点击事件和页面相关事件）
   cleanFlutterEvent(data: any) {
-    if (!data.track_id || !data.device_id || !data.app_version) {
+    if (
+      !data.track_id ||
+      !data.device_id ||
+      !data.app_version ||
+      !data.sdk_version
+    ) {
       return [];
     }
 
@@ -39,8 +44,8 @@ export class EventService {
       userId: data.user_id || "",
       launchId: data.track_id,
       triggerId: data.signature,
-      sdkVersion: data.sdk_version || "",
-      version: data.app_version || "",
+      sdkVersion: data.sdk_version,
+      version: data.app_version,
     };
     for (let i = 0; i < dataList.length; i++) {
       const item = dataList[i];
@@ -81,10 +86,6 @@ export class EventService {
 
     // params必须为对象
     if (!time || !params || typeof params !== "object") {
-      return;
-    }
-
-    if (isCustom && !key) {
       return;
     }
 
