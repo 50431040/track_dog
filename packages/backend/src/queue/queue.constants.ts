@@ -1,6 +1,6 @@
-export const EVENT_ENTRY_QUEUE = "EVENT_ENTRY_QUEUE";
-export const EVENT_ENTRY_PROCESS = "EVENT_ENTRY_PROCESS";
-export const EVENT_CLEAN_QUEUE = "EVENT_CLEAN_QUEUE";
-export const EVENT_CLEAN_PROCESS = "EVENT_CLEAN_PROCESS";
-export const NORMAL_EVENT_QUEUE = "NORMAL_EVENT_QUEUE";
-export const NORMAL_EVENT_PROCESS = "NORMAL_EVENT_PROCESS";
+export const EVENT_ENTRY_QUEUE = "eventEntryQueue";
+export const EVENT_ENTRY_PROCESS = "eventEntryProcess";
+export const EVENT_CLEAN_QUEUE = "eventCleanQueue";
+export const EVENT_CLEAN_PROCESS = "eventCleanProcess";
+export const NORMAL_EVENT_QUEUE = "normalEventQueue";
+export const NORMAL_EVENT_PROCESS = "normalEventProcess";
