@@ -6,3 +6,5 @@ export const NORMAL_EVENT_QUEUE = "normalEventQueue";
 export const NORMAL_EVENT_PROCESS = "normalEventProcess";
 export const DEVICE_CLEAN_QUEUE = "deviceCleanQueue";
 export const DEVICE_CLEAN_PROCESS = "deviceCleanProcess";
+export const DEVICE_HANDLE_QUEUE = "deviceHandleQueue";
+export const DEVICE_HANDLE_PROCESS = "deviceHandleProcess";

@@ -24,6 +24,7 @@ import { QueueModule } from "./queue/queue.module";
 import { NormalEventModule } from "./normal-event/normal-event.module";
 import { WebNormalEventModule } from "./web-normal-event/web-normal-event.module";
 import { DeviceModule } from "./device/device.module";
+import { DeviceRepository } from "./schema/device.schema";
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { DeviceModule } from "./device/device.module";
           NormalEventRepository,
           EventRecordRepository,
           EventCustomRepository,
+          DeviceRepository,
         ],
         synchronize: true,
         logging: process.env.NODE_ENV !== "production",

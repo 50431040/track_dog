@@ -10,9 +10,13 @@ import {
   EVENT_ENTRY_QUEUE,
   DEVICE_CLEAN_QUEUE,
   DEVICE_CLEAN_PROCESS,
+  DEVICE_HANDLE_QUEUE,
+  DEVICE_HANDLE_PROCESS,
 } from "./queue.constants";
 import { EventEntryParams } from "@/types/event";
 import { INormalEvent } from "@/enum/event";
+import { DeviceRepository } from "@/schema/device.schema";
+import { DeepPartial } from "typeorm";
 
 @Injectable()
 export class QueueService {
@@ -25,6 +29,8 @@ export class QueueService {
     private readonly normalEventQueue: Queue,
     @InjectQueue(DEVICE_CLEAN_QUEUE)
     private readonly deviceCleanQueue: Queue,
+    @InjectQueue(DEVICE_HANDLE_QUEUE)
+    private readonly deviceHandleQueue: Queue,
   ) {}
 
   // 事件入口生产者
@@ -54,6 +60,14 @@ export class QueueService {
   // 设备信息清洗生产者
   deviceCleanProducer(params: EventEntryParams) {
     return this.deviceCleanQueue.add(DEVICE_CLEAN_PROCESS, params, {
+      removeOnComplete: true,
+      removeOnFail: true,
+    });
+  }
+
+  // 设备信息处理生产者
+  deviceHandleProducer(params: DeepPartial<DeviceRepository>) {
+    return this.deviceHandleQueue.add(DEVICE_HANDLE_PROCESS, params, {
       removeOnComplete: true,
       removeOnFail: true,
     });

@@ -3,15 +3,23 @@ import { DEVICE_CLEAN_PROCESS, DEVICE_CLEAN_QUEUE } from "../queue.constants";
 import { Job } from "bull";
 import { EventEntryParams } from "@/types/event";
 import { DeviceService } from "@/device/device.service";
+import { QueueService } from "../queue.service";
 
 @Processor(DEVICE_CLEAN_QUEUE)
 export class DeviceCleanConsumer {
-  constructor(private readonly deviceService: DeviceService) {}
+  constructor(
+    private readonly deviceService: DeviceService,
+    private readonly queueService: QueueService,
+  ) {}
 
-  @Process(DEVICE_CLEAN_PROCESS)
+  @Process({
+    name: DEVICE_CLEAN_PROCESS,
+    concurrency: 10,
+  })
   async handleDeviceClean(job: Job<EventEntryParams>) {
-    const { application, data } = job.data;
-    console.log(application, data);
-    await this.deviceService.cleanDevice(data);
+    const deviceInfo = await this.deviceService.cleanDevice(job.data);
+    if (deviceInfo) {
+      this.queueService.deviceHandleProducer(deviceInfo);
+    }
   }
 }

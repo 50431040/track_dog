@@ -7,6 +7,7 @@ import {
   EVENT_CLEAN_QUEUE,
   EVENT_ENTRY_QUEUE,
   DEVICE_CLEAN_QUEUE,
+  DEVICE_HANDLE_QUEUE,
 } from "./queue.constants";
 import { ApplicationModule } from "@/application/application.module";
 import { EventModule } from "@/event/event.module";
@@ -16,6 +17,8 @@ import { EventRecordModule } from "@/event-record/event-record.module";
 import { EventCustomModule } from "@/event-custom/event-custom.module";
 import { NormalEventModule } from "@/normal-event/normal-event.module";
 import { DeviceModule } from "@/device/device.module";
+import { DeviceCleanConsumer } from "./consumer/device-clean.consumer";
+import { DeviceHandleConsumer } from "./consumer/device-handle.consumer";
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import { DeviceModule } from "@/device/device.module";
     BullModule.registerQueue({
       name: DEVICE_CLEAN_QUEUE,
     }),
+    BullModule.registerQueue({
+      name: DEVICE_HANDLE_QUEUE,
+    }),
     ApplicationModule,
     EventModule,
     EventRecordModule,
@@ -43,6 +49,8 @@ import { DeviceModule } from "@/device/device.module";
     EventEntryConsumer,
     EventCleanConsumer,
     NormalEventConsumer,
+    DeviceCleanConsumer,
+    DeviceHandleConsumer,
   ],
   exports: [QueueService],
 })
