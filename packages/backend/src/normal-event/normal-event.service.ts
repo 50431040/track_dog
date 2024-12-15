@@ -32,7 +32,7 @@ export class NormalEventService {
         });
         return event;
       }
-      this.logger.error("��存点击事件失败", error.code);
+      this.logger.error("保存点击事件失败", error.code);
     }
   }
 
